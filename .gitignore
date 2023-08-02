@@ -1,0 +1,10 @@
+*
+!*/
+!*.pyi
+!/.editorconfig
+!/.gitattributes
+!/.gitignore
+!/LICENSE
+*.pyc
+/venv/
+/.venv/
