@@ -1,0 +1,15 @@
+[flake8]
+# https://wiki.blender.org/wiki/Process/Addons/Guidelines
+max-line-length = 120
+per-file-ignores =
+    *.pyi:E301,E302,E305,E701,F401,SC200
+ignore-names=
+    bpy_prop_collection
+    bpy_prop_array
+    bpy_struct
+    PointerProperty
+    Translation
+    Rotation
+    WIP_with_template_mesh
+dictionaries=en_US,python,technical
+whitelist=dictionary.txt

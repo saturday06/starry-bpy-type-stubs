@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "starry-bpy-type-stubs"
+version = "1.0.0"
+description = ""
+authors = ["Isamu Mogi <isamu@leafytree.jp>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "==3.10.*"
+bpy = "3.6.0"
+
+[tool.poetry.dev-dependencies]
+autoflake = "*"
+black = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-no-pep420 = "*"
+flake8-scream = "*"
+flake8-simplify = "*"
+flake8-spellcheck = "*"
+isort = "*"
+mypy = "*"
+pep8-naming = "*"
+pylint = "*"
+pyright = "*"
+
+[tool.black]
+target-version = ['py39']
+
+[tool.mypy]
+python_version = 3.9
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "io_scene_vrm.*",
+]
+ignore_missing_imports = true
+
+[tool.pylint."messages control"]
+disable = [
+    "fixme",
+    "import-error",
+    "invalid-name",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "multiple-statements",
+    "redefined-builtin",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-locals",
+    "unused-argument",
+]
+extension-pkg-allow-list = ["bpy"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
