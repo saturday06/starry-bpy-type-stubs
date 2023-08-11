@@ -8,6 +8,7 @@
 !/.gitattributes
 !/.gitignore
 !/.github/workflows/*.yml
+!/poetry.lock
 !/dictionary.txt
 !/pyproject.toml
 !/LICENSE
