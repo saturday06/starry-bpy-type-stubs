@@ -67,3 +67,17 @@ def append(
     set_fake: bool = False,
     use_recursive: bool = True,
 ) -> set[str]: ...
+def redraw_timer(
+    type: str = "DRAW",
+    iterations: int = 10,
+    time_limit: float = 0.0,
+) -> None: ...
+def vrm_export_human_bones_assignment(
+    execution_context: str,
+    armature_object_name: str,
+) -> set[str]: ...
+def vrm_export_confirmation(
+    execution_context: str,
+    armature_object_name: str,
+) -> set[str]: ...
+def vrm_export_armature_selection(execution_context: str) -> set[str]: ...

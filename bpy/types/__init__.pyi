@@ -1,5 +1,12 @@
 import contextlib
-from collections.abc import Iterable, KeysView, MutableSequence, Sequence
+from collections.abc import (
+    ItemsView,
+    Iterable,
+    KeysView,
+    MutableSequence,
+    Sequence,
+    ValuesView,
+)
 from typing import Callable, Generic, Iterator, Optional, TypeVar, Union, overload
 
 # pyright: reportMissingImports=false, reportUnknownVariableType=false
@@ -11,11 +18,21 @@ from io_scene_vrm.editor.extension import (
     VrmAddonSceneExtensionPropertyGroup,
 )
 
+import bpy
 import mathutils
 
 class bpy_struct:
     id_data: Optional["ID"]
+    def path_from_id(self, property: str = "") -> str: ...
     def __contains__(self, key: str) -> bool: ...
+    def keyframe_insert(
+        self,
+        data_path: str,
+        index: int = -1,
+        frame: float = bpy.context.scene.frame_current,
+        group: str = "",
+        # options: set[str] = set(), デフォルト値が共有のmutable変数であるとしてpylintに警告を受ける。必要になったらその時考える。
+    ) -> bool: ...
 
 __BpyPropCollectionElement = TypeVar("__BpyPropCollectionElement")
 
@@ -29,6 +46,8 @@ class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
     def __len__(self) -> int: ...
     def remove(self, element: __BpyPropCollectionElement) -> None: ...
     def keys(self) -> KeysView[str]: ...
+    def values(self) -> ValuesView[__BpyPropCollectionElement]: ...
+    def items(self) -> ItemsView[str, __BpyPropCollectionElement]: ...
 
 # ドキュメントには存在しない
 __BpyPropArrayElement = TypeVar("__BpyPropArrayElement")
@@ -54,13 +73,24 @@ class ID(bpy_struct, __CustomProperty):
     users: int
     use_fake_user: bool
 
-class AnyType(bpy_struct): ...
+    def animation_data_create(self) -> Optional["AnimData"]: ...
+
+# この型はUILayout.prop_searchで使うけど、ドキュメントが曖昧なためいまいちな定義になっている
+AnyType = Union["BlendData", "Operator"]
+
+class Property(bpy_struct): ...
+
+class CollectionProperty(Property):
+    def add(self) -> Property: ...  # TODO: undocumented
+    def __len__(self) -> int: ...  # TODO: undocumented
+    def __iter__(self) -> Iterator[Property]: ...  # TODO: undocumented
 
 class ColorManagedInputColorspaceSettings(bpy_struct):
     name: str
 
 class Event(bpy_struct): ...
 class ImageUser(bpy_struct): ...
+class PackedFile(bpy_struct): ...
 
 class Image(ID):
     colorspace_settings: ColorManagedInputColorspaceSettings
@@ -74,10 +104,38 @@ class Image(ID):
     generated_height: int
     generated_width: int
     is_dirty: bool
+    bindcode: int
+    source: str
+    @property
+    def packed_file(self) -> Optional[PackedFile]: ...  # Optionalっぽい
     def filepath_from_user(self, image_user: Optional[ImageUser] = None) -> str: ...
     def update(self) -> None: ...
     def gl_load(self, frame: int = 0) -> None: ...
     def unpack(self, method: str = "USE_LOCAL") -> None: ...
+    def pack(self, data: str = "", data_len: int = 0) -> None: ...
+    def reload(self) -> None: ...
+
+class TimelineMarker(bpy_struct):
+    name: str
+    frame: int
+
+class ActionPoseMarkers(bpy_prop_collection[TimelineMarker]): ...
+
+class FCurve(bpy_struct):
+    mute: bool
+    is_valid: bool
+    data_path: str
+    array_index: int
+
+    def evaluate(self, frame: int) -> float: ...
+
+class ActionFCurves(bpy_prop_collection[FCurve]): ...
+
+class Action(ID):
+    @property
+    def fcurves(self) -> ActionFCurves: ...
+    @property
+    def pose_markers(self) -> ActionPoseMarkers: ...
 
 class Texture(ID): ...
 
@@ -85,7 +143,20 @@ class LayerObjects(bpy_prop_collection["Object"]):
     active: Optional["Object"]
 
 class Space(bpy_struct): ...
-class SpaceView3D(Space): ...
+
+class SpaceView3D(Space):
+    @staticmethod  # TODO: 本当にstaticなのか確認
+    def draw_handler_add(
+        callback: Callable[[], None],
+        args: tuple[object, ...],
+        region_type: str,
+        draw_type: str,
+    ) -> object: ...
+    @staticmethod  # TODO: 本当にstaticなのか確認
+    def draw_handler_remove(
+        handler: object,
+        region_type: str,
+    ) -> None: ...
 
 class Depsgraph(bpy_struct):
     def update(self) -> None: ...
@@ -98,10 +169,31 @@ class ViewLayer(bpy_struct):
 class Bone(bpy_struct, __CustomProperty):
     name: str
     parent: Optional["Bone"]
-    tail: mathutils.Vector  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
-    vrm_addon_extension: VrmAddonBoneExtensionPropertyGroup
+
+    @property
+    def head(self) -> mathutils.Vector: ...  # TODO: 型が正しいか？
+    @head.setter
+    def head(self, value: Sequence[float]) -> None: ...  # TODO: 型が正しいか？
+    @property
+    def tail(self) -> mathutils.Vector: ...  # TODO: 型が正しいか？
+    @tail.setter
+    def tail(self, value: Sequence[float]) -> None: ...  # TODO: 型が正しいか？
+
+    head_local: mathutils.Vector  # TODO: 型が正しいか？
+    head_radius: float
+    tail_local: mathutils.Vector  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
+    matrix_local: mathutils.Matrix  # ドキュメントには二次元のfloat配列と書いてあるが、実際にはMatrix
+
+    @property
+    def length(self) -> float: ...
+    @property
+    def children(self) -> bpy_prop_collection["Bone"]: ...
+    def translate(self, vec: mathutils.Vector) -> None: ...
+    @property
+    def vrm_addon_extension(self) -> VrmAddonBoneExtensionPropertyGroup: ...
 
 class EditBone(bpy_struct):
+    name: str
     @property
     def head(self) -> mathutils.Vector: ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
     @head.setter
@@ -115,17 +207,44 @@ class EditBone(bpy_struct):
     roll: float
     use_local_location: bool
     use_connect: bool
+    head_radius: float
+    tail_radius: float
+    envelope_distance: float
+    matrix: mathutils.Matrix
+
+    @property
+    def children(self) -> Sequence["EditBone"]: ...
+    def transform(
+        self, matrix: mathutils.Matrix, *, scale: bool = True, roll: bool = True
+    ) -> None: ...
 
 class PoseBoneConstraints(bpy_prop_collection["Constraint"]):
     def new(self, type: str) -> "Constraint": ...
 
 class PoseBone(bpy_struct, __CustomProperty):
     name: str
-    constraints: PoseBoneConstraints
-    head: mathutils.Vector  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
+    @property
+    def parent(self) -> Optional["PoseBone"]: ...
+    @property
+    def constraints(self) -> PoseBoneConstraints: ...
+    @property
+    def head(self) -> mathutils.Vector: ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
     rotation_mode: str
     rotation_quaternion: mathutils.Quaternion
-    bone: Bone
+    @property
+    def bone(self) -> Bone: ...
+    matrix: mathutils.Matrix  # これもドキュメントと異なりMatrix
+    matrix_basis: mathutils.Matrix  # これもドキュメントと異なりMatrix
+    @property
+    def children(self) -> Sequence["PoseBone"]: ...
+    @property
+    def location(self) -> mathutils.Vector: ...  # TODO: 本当にVectorなのか確認
+    @location.setter
+    def location(self, value: Iterable[float]) -> None: ...
+    @property
+    def scale(self) -> mathutils.Vector: ...  # TODO: 本当にVectorなのか確認
+    @scale.setter
+    def scale(self, value: Iterable[float]) -> None: ...
 
 class ArmatureBones(bpy_prop_collection[Bone]): ...
 class OperatorProperties(bpy_struct): ...
@@ -186,8 +305,22 @@ class UILayout(bpy_struct):
         icon_value: int = 0,
     ) -> OperatorProperties: ...
     def separator(self, factor: float = 1.0) -> None: ...
+    def prop_search(
+        self,
+        data: AnyType,
+        property: str,
+        search_data: AnyType,
+        search_property: str,
+        text: str = "",
+        text_ctxt: str = "",
+        translate: bool = True,
+        icon: str = "NONE",
+    ) -> "UILayout": ...
+
     alignment: str
     scale_x: float
+    emboss: str
+    alert: bool
 
 class AddonPreferences(bpy_struct):
     layout: UILayout  # TODO: No documentation
@@ -203,9 +336,11 @@ class IDMaterials(
 class Curve(ID):
     materials: IDMaterials
 
-class MeshUVLoop(bpy_struct): ...
+class MeshUVLoop(bpy_struct):
+    uv: mathutils.Vector  # TODO: 正しい方を調べる
 
 class MeshUVLoopLayer(bpy_struct):
+    name: str
     data: bpy_prop_collection[MeshUVLoop]
 
 class UVLoopLayers(bpy_prop_collection[MeshUVLoopLayer]): ...
@@ -213,31 +348,93 @@ class UVLoopLayers(bpy_prop_collection[MeshUVLoopLayer]): ...
 class MeshLoopTriangle(bpy_struct):
     vertices: tuple[int, int, int]
     material_index: int
+    split_normals: tuple[
+        tuple[float, float, float],
+        tuple[float, float, float],
+        tuple[float, float, float],
+    ]  # TODO: 正しい型を調べる
+    loops: tuple[int, int, int]  # TODO: 正しい型を調べる
 
+class MeshLoop(bpy_struct):
+    tangent: mathutils.Vector  # TODO: 正しい型を調べる
+    vertex_index: int
+    normal: mathutils.Vector
+
+class MeshLoops(bpy_prop_collection[MeshLoop]): ...
 class MeshLoopTriangles(bpy_prop_collection[MeshLoopTriangle]): ...
+
+class VertexGroupElement(bpy_struct):
+    weight: float
+    @property
+    def group(self) -> int: ...
 
 class MeshVertex(bpy_struct):
     co: tuple[float, float, float]  # Vectorかも?
+    normal: mathutils.Vector  # TODO: 正しい型を調べる
+    @property
+    def groups(self) -> bpy_prop_collection[VertexGroupElement]: ...
 
 class MeshVertices(bpy_prop_collection[MeshVertex]): ...
 
+class ShapeKey(bpy_struct):
+    name: str
+    value: float
+    def normals_split_get(self) -> Sequence[float]: ...  # TODO: 正しい型
+
+class Key(ID):
+    @property
+    def key_blocks(self) -> bpy_prop_collection[ShapeKey]: ...
+    @property
+    def reference_key(self) -> ShapeKey: ...
+
+class MeshPolygon(bpy_struct):
+    material_index: int
+    vertices: tuple[int, int, int]  # TODO: 正しい型を調べる
+
+class MeshPolygons(bpy_prop_collection[MeshPolygon]): ...
+
 class Mesh(ID):
     use_auto_smooth: bool
-    materials: IDMaterials
-    uv_layers: UVLoopLayers
-    loop_triangles: MeshLoopTriangles
-    vertices: MeshVertices
+
+    @property
+    def materials(self) -> IDMaterials: ...
+    @property
+    def uv_layers(self) -> UVLoopLayers: ...
+    @property
+    def loops(self) -> MeshLoops: ...
+    @property
+    def loop_triangles(self) -> MeshLoopTriangles: ...
+    @property
+    def vertices(self) -> MeshVertices: ...
+    @property
+    def shape_keys(self) -> Optional[Key]: ...  # Optional
+    @property
+    def polygons(self) -> MeshPolygons: ...
+
     has_custom_normals: bool
     def calc_tangents(self, uvmap: str = "") -> None: ...
     def calc_loop_triangles(self) -> None: ...
+    def copy(self) -> "Mesh": ...  # ID.copy()
+    def transform(self, matrix: mathutils.Matrix, shape_keys: bool = False) -> None: ...
+    def calc_normals_split(self) -> None: ...
 
 class ArmatureEditBones(bpy_prop_collection[EditBone]):
     def new(self, name: str) -> EditBone: ...
 
+class AnimData(bpy_struct):
+    action: Optional[Action]  # TODO: 本当にOptionalか確認
+
 class Armature(ID):
-    bones: ArmatureBones
-    edit_bones: ArmatureEditBones
-    vrm_addon_extension: VrmAddonArmatureExtensionPropertyGroup
+    pose_position: str
+
+    @property
+    def animation_data(self) -> Optional[AnimData]: ...  # TODO: 本当にOptionalか確認
+    @property
+    def bones(self) -> ArmatureBones: ...
+    @property
+    def edit_bones(self) -> ArmatureEditBones: ...
+    @property
+    def vrm_addon_extension(self) -> VrmAddonArmatureExtensionPropertyGroup: ...
 
 class Text(ID):
     def write(self, text: str) -> None: ...
@@ -644,16 +841,32 @@ class ShaderNodeGroup(ShaderNode):
 
 class Pose(bpy_struct):
     bones: bpy_prop_collection[PoseBone]
+    @classmethod
+    def apply_pose_from_action(
+        cls, action: Action, evaluation_time: float = 0.0
+    ) -> None: ...
 
 class MaterialSlot(bpy_struct):
+    @property
+    def name(self) -> str: ...
     material: Optional["Material"]  # マテリアル一覧の+を押したまま何も選ばないとNoneになる
+
+class ObjectModifiers(bpy_prop_collection["Modifier"]):
+    def new(self, name: str, type: str) -> "Modifier": ...
+
+class VertexGroup(bpy_struct):
+    name: str
+
+class VertexGroups(bpy_prop_collection[VertexGroup]): ...
 
 class Object(ID):
     name: str
     type: str
-    data: Union[None, Armature, Mesh]
-    mode: str
-    pose: Pose
+    data: Optional[ID]  # ドキュメントにはIDと書いてあるがtypeがemptyの場合はNoneになる
+    @property
+    def mode(self) -> str: ...
+    @property
+    def pose(self) -> Pose: ...
     def select_set(
         self, state: bool, view_layer: Optional[ViewLayer] = None
     ) -> None: ...
@@ -661,16 +874,18 @@ class Object(ID):
     hide_render: bool
     hide_select: bool
     hide_viewport: bool
-    material_slots: bpy_prop_collection[MaterialSlot]
-    vrm_addon_extension: VrmAddonObjectExtensionPropertyGroup
-    users_collection: bpy_prop_collection["Collection"]
+    @property
+    def material_slots(self) -> bpy_prop_collection[MaterialSlot]: ...
+    @property
+    def users_collection(self) -> bpy_prop_collection["Collection"]: ...
     parent: Optional["Object"]
     def visible_get(
         self,
         view_layer: Optional[ViewLayer] = None,
         viewport: Optional[SpaceView3D] = None,
     ) -> bool: ...
-    constraints: "ObjectConstraints"
+    @property
+    def constraints(self) -> "ObjectConstraints": ...
     parent_type: str
     parent_bone: str
     empty_display_size: float
@@ -681,12 +896,15 @@ class Object(ID):
     rotation_mode: str
     rotation_quaternion: mathutils.Quaternion  # TODO: 型あってる?
 
-    bound_box: bpy_prop_array[bpy_prop_array[float]]
+    @property
+    def bound_box(self) -> bpy_prop_array[bpy_prop_array[float]]: ...
 
     matrix_world: mathutils.Matrix  # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
     matrix_local: mathutils.Matrix  # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
     scale: mathutils.Vector  # ドキュメントには3要素のfloat配列って書いてあるけど実際にはVector
 
+    @property
+    def vertex_groups(self) -> VertexGroups: ...
     @property
     def location(self) -> mathutils.Vector: ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
     @location.setter
@@ -697,6 +915,12 @@ class Object(ID):
         preserve_all_data_layers: bool = False,
         depsgraph: Optional[Depsgraph] = None,
     ) -> Mesh: ...
+    @property
+    def modifiers(self) -> ObjectModifiers: ...
+    @property
+    def animation_data(self) -> Optional[AnimData]: ...  # TODO: 本当にOptionalか確認
+    @property
+    def vrm_addon_extension(self) -> VrmAddonObjectExtensionPropertyGroup: ...
 
 class PreferencesView:
     use_translate_interface: bool
@@ -735,17 +959,36 @@ class NodeTree(ID):
 class Material(ID):
     name: str
     blend_method: str
-    node_tree: NodeTree  # TODO: 無いことがある?
+
+    @property
+    def node_tree(self) -> NodeTree: ...  # TODO: 無いことがある?
+
     use_nodes: bool
     alpha_threshold: float
     shadow_method: str
     use_backface_culling: bool
     show_transparent_back: bool
     alpha_method: str
+    diffuse_color: mathutils.Vector  # TODO 正しい型
+    roughness: float
 
-    vrm_addon_extension: VrmAddonMaterialExtensionPropertyGroup
+    @property
+    def vrm_addon_extension(self) -> VrmAddonMaterialExtensionPropertyGroup: ...
 
-class Modifier(bpy_struct): ...
+class Modifier(bpy_struct):
+    name: str
+    show_expanded: bool
+    show_in_editmode: bool
+    show_viewport: bool
+
+    @property
+    def type(self) -> str: ...
+
+    # TODO: 本当はbpy_structのメソッド
+    def get(self, key: str, default: object = None) -> object: ...
+    # TODO: 本当はbpy_structのメソッド
+    def __setitem__(self, key: str, value: object) -> None: ...
+
 class PropertyGroup(bpy_struct): ...
 class ObjectConstraints(bpy_prop_collection["Constraint"]): ...
 class OperatorFileListElement(PropertyGroup): ...
@@ -779,38 +1022,88 @@ class ViewLayers(bpy_prop_collection[ViewLayer]):
 class ColorManagedViewSettings(bpy_struct):
     view_transform: str
 
+class View3DCursor(bpy_struct):
+    matrix: mathutils.Matrix
+
+class RenderSettings(bpy_struct):
+    fps: int
+    fps_base: float
+
 class Scene(ID):
-    collection: "Collection"
-    view_layers: ViewLayers
-    view_settings: ColorManagedViewSettings
-    vrm_addon_extension: VrmAddonSceneExtensionPropertyGroup
+    frame_start: int
+    frame_current: int
+    frame_end: int
+
+    @property
+    def collection(self) -> "Collection": ...
+    @property
+    def view_layers(self) -> ViewLayers: ...
+    @property
+    def view_settings(self) -> ColorManagedViewSettings: ...
+    @property
+    def cursor(self) -> View3DCursor: ...
+    @property
+    def render(self) -> RenderSettings: ...
+    @property
+    def vrm_addon_extension(self) -> VrmAddonSceneExtensionPropertyGroup: ...
 
 class WindowManager(ID):
     @classmethod
     def invoke_props_dialog(
         cls, operator: "Operator", width: int = 300
     ) -> set[str]: ...
+    def progress_begin(self, min: float, max: float) -> None: ...
+    def progress_update(self, value: float) -> None: ...
+    def progress_end(self) -> None: ...
 
 class SpaceFileBrowser(Space):
     active_operator: "Operator"
 
+class RegionView3D(bpy_struct):
+    perspective_matrix: mathutils.Matrix  # ドキュメントには二次元配列と書いてあるので要確認
+    view_matrix: mathutils.Matrix  # ドキュメントには二次元配列と書いてあるので要確認
+    window_matrix: mathutils.Matrix  # ドキュメントには二次元配列と書いてあるので要確認
+
+class Area(bpy_struct):
+    @property
+    def width(self) -> int: ...
+    @property
+    def height(self) -> int: ...
+
 class Context(bpy_struct):
+    def evaluated_depsgraph_get(self) -> Depsgraph: ...
+
     # https://docs.blender.org/api/2.93/bpy.context.html
     # https://docs.blender.org/api/2.93/bpy.types.Context.html
 
     # Global Context
-    blend_data: "BlendData"
-    mode: str
-    preferences: Preferences
-    scene: Scene
-    space_data: Space
-    view_layer: ViewLayer
-    window_manager: WindowManager
+    @property
+    def area(self) -> "Area": ...
+    @property
+    def blend_data(self) -> "BlendData": ...
+    @property
+    def mode(self) -> str: ...
+    @property
+    def preferences(self) -> Preferences: ...
+    @property
+    def region_data(self) -> RegionView3D: ...
+    @property
+    def scene(self) -> Scene: ...
+    @property
+    def space_data(self) -> Space: ...
+    @property
+    def view_layer(self) -> ViewLayer: ...
+    @property
+    def window_manager(self) -> WindowManager: ...
 
     # Screen Context
     object: Optional[Object]
     active_object: Optional[Object]
     selectable_objects: Sequence[Object]
+    selected_objects: Sequence[Object]
+
+    # Buttons Context or Node Context
+    material: Optional[Material]
 
 class CollectionObjects(bpy_prop_collection[Object]):
     def link(self, obj: Object) -> None: ...
@@ -838,7 +1131,9 @@ class BlendDataObjects(bpy_prop_collection[Object]):
     ) -> None: ...
 
 class Library(ID): ...
-class BlendDataMaterials(bpy_prop_collection[Material]): ...
+
+class BlendDataMaterials(bpy_prop_collection[Material]):
+    def new(self, name: str) -> Material: ...
 
 class BlendDataImages(bpy_prop_collection[Image]):
     def new(
@@ -854,7 +1149,8 @@ class BlendDataImages(bpy_prop_collection[Image]):
     ) -> Image: ...
     def load(self, filepath: str, check_existing: bool = False) -> Image: ...
 
-class BlendDataArmatures(bpy_prop_collection[Armature]): ...
+class BlendDataArmatures(bpy_prop_collection[Armature]):
+    def new(self, name: str) -> Armature: ...
 
 class BlendDataTexts(bpy_prop_collection[Text]):
     def new(self, name: str) -> Text: ...
@@ -863,26 +1159,48 @@ class BlendDataMeshes(bpy_prop_collection[Mesh]):
     def new(self, name: str) -> Mesh: ...
 
 class BlendDataLibraries(bpy_prop_collection[Library]):
-    @contextlib.contextmanager
     def load(
         self, filepath: str, link: bool
-    ) -> Iterator[tuple["BlendData", "BlendData"]]: ...  # ドキュメントに存在しない
+    ) -> contextlib.AbstractContextManager[
+        tuple["BlendData", "BlendData"]
+    ]: ...  # ドキュメントに存在しない
 
 class BlendDataNodeTrees(bpy_prop_collection[NodeTree]):
     def new(self, name: str, type: str) -> NodeTree: ...
     def append(self, node_group: NodeTree) -> None: ...  # ドキュメントに存在しない
 
+class BlendDataActions(bpy_prop_collection[Action]):
+    def new(self, name: str) -> Action: ...
+
+class BlendDataScenes(bpy_prop_collection[Scene]): ...
+
 class BlendData:
-    filepath: str
-    collections: BlendDataCollections
-    objects: BlendDataObjects
-    materials: BlendDataMaterials
-    images: BlendDataImages
-    armatures: BlendDataArmatures
-    texts: BlendDataTexts
-    meshes: BlendDataMeshes
-    libraries: BlendDataLibraries
-    node_groups: BlendDataNodeTrees
+    @property
+    def actions(self) -> BlendDataActions: ...
+    @property
+    def filepath(self) -> str: ...
+    @property
+    def collections(self) -> BlendDataCollections: ...
+    @property
+    def objects(self) -> BlendDataObjects: ...
+    @property
+    def materials(self) -> BlendDataMaterials: ...
+    @property
+    def images(self) -> BlendDataImages: ...
+    @property
+    def armatures(self) -> BlendDataArmatures: ...
+    @property
+    def texts(self) -> BlendDataTexts: ...
+    @property
+    def meshes(self) -> BlendDataMeshes: ...
+    @property
+    def libraries(self) -> BlendDataLibraries: ...
+    @property
+    def node_groups(self) -> BlendDataNodeTrees: ...
+    @property
+    def scenes(self) -> BlendDataScenes: ...
+    @property
+    def shape_keys(self) -> bpy_prop_collection[Key]: ...
 
 class Operator(bpy_struct):
     bl_idname: str

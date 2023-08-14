@@ -1,3 +1,6 @@
 4x4
 bpy
+mathutils
+pylint
 pyright
+uilayout
