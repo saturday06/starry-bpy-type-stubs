@@ -81,3 +81,22 @@ def vrm_export_confirmation(
     armature_object_name: str,
 ) -> set[str]: ...
 def vrm_export_armature_selection(execution_context: str) -> set[str]: ...
+def vrm_license_warning(
+    execution_context: str,
+    import_anyway: bool,
+    license_confirmations: list[dict[str, str]],
+    filepath: str,
+    extract_textures_into_folder: bool,
+    make_new_texture_folder: bool,
+) -> set[str]: ...
+def vrm_gltf2_addon_disabled_warning(
+    execution_context: str = "EXEC_DEFAULT",
+) -> set[str]: ...
+def vrma_import_prerequisite(
+    execution_context: str,
+    armature_object_name: str,
+) -> set[str]: ...
+def vrma_export_prerequisite(
+    execution_context: str,
+    armature_object_name: str,
+) -> set[str]: ...

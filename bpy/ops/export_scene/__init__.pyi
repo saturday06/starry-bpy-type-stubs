@@ -7,6 +7,7 @@ def vrm(
 def vrma(
     execution_context: str = "EXEC_DEFAULT",
     filepath: str = "",
+    armature_object_name: str = "",
 ) -> set[str]: ...
 def vrma_debug(
     execution_context: str = "EXEC_DEFAULT",

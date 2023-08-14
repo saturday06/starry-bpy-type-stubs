@@ -9,4 +9,5 @@ depsgraph_update_post: MutableSequence[Callable[[object], None]]
 
 save_pre: MutableSequence[Callable[[object], None]]
 frame_change_pre: MutableSequence[Callable[[object], None]]
+frame_change_post: MutableSequence[Callable[[object], None]]
 load_post: MutableSequence[Callable[[object], None]]

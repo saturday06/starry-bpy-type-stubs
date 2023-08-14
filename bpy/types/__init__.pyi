@@ -142,9 +142,16 @@ class Texture(ID): ...
 class LayerObjects(bpy_prop_collection["Object"]):
     active: Optional["Object"]
 
-class Space(bpy_struct): ...
+class Space(bpy_struct):
+    @property
+    def type(self) -> str: ...
+
+class View3DShading(bpy_struct):
+    type: str
 
 class SpaceView3D(Space):
+    @property
+    def shading(self) -> View3DShading: ...
     @staticmethod  # TODO: 本当にstaticなのか確認
     def draw_handler_add(
         callback: Callable[[], None],
@@ -990,13 +997,15 @@ class Modifier(bpy_struct):
     def __setitem__(self, key: str, value: object) -> None: ...
 
 class PropertyGroup(bpy_struct): ...
-class ObjectConstraints(bpy_prop_collection["Constraint"]): ...
 class OperatorFileListElement(PropertyGroup): ...
 
 class Constraint(bpy_struct):
     name: str
     is_valid: bool
     mute: bool
+
+class ObjectConstraints(bpy_prop_collection[Constraint]):
+    def new(self, type: str) -> Constraint: ...
 
 class DampedTrackConstraint(Constraint):
     target: Optional[Object]
@@ -1047,6 +1056,20 @@ class Scene(ID):
     @property
     def vrm_addon_extension(self) -> VrmAddonSceneExtensionPropertyGroup: ...
 
+class AreaSpaces(bpy_prop_collection[Space]): ...
+
+class Area(bpy_struct):
+    @property
+    def width(self) -> int: ...
+    @property
+    def height(self) -> int: ...
+    @property
+    def spaces(self) -> AreaSpaces: ...
+
+class Screen(ID):
+    @property
+    def areas(self) -> bpy_prop_collection[Area]: ...
+
 class WindowManager(ID):
     @classmethod
     def invoke_props_dialog(
@@ -1063,12 +1086,6 @@ class RegionView3D(bpy_struct):
     perspective_matrix: mathutils.Matrix  # ドキュメントには二次元配列と書いてあるので要確認
     view_matrix: mathutils.Matrix  # ドキュメントには二次元配列と書いてあるので要確認
     window_matrix: mathutils.Matrix  # ドキュメントには二次元配列と書いてあるので要確認
-
-class Area(bpy_struct):
-    @property
-    def width(self) -> int: ...
-    @property
-    def height(self) -> int: ...
 
 class Context(bpy_struct):
     def evaluated_depsgraph_get(self) -> Depsgraph: ...
@@ -1089,6 +1106,8 @@ class Context(bpy_struct):
     def region_data(self) -> RegionView3D: ...
     @property
     def scene(self) -> Scene: ...
+    @property
+    def screen(self) -> Screen: ...
     @property
     def space_data(self) -> Space: ...
     @property
