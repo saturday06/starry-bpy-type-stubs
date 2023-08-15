@@ -76,7 +76,7 @@ class ID(bpy_struct, __CustomProperty):
     def animation_data_create(self) -> Optional["AnimData"]: ...
 
 # この型はUILayout.prop_searchで使うけど、ドキュメントが曖昧なためいまいちな定義になっている
-AnyType = Union["BlendData", "Operator"]
+AnyType = Union["ID", "BlendData", "Operator", "PropertyGroup"]
 
 class Property(bpy_struct): ...
 
@@ -176,6 +176,7 @@ class ViewLayer(bpy_struct):
 class Bone(bpy_struct, __CustomProperty):
     name: str
     parent: Optional["Bone"]
+    use_inherit_rotation: bool
 
     @property
     def head(self) -> mathutils.Vector: ...  # TODO: 型が正しいか？
@@ -198,6 +199,24 @@ class Bone(bpy_struct, __CustomProperty):
     def translate(self, vec: mathutils.Vector) -> None: ...
     @property
     def vrm_addon_extension(self) -> VrmAddonBoneExtensionPropertyGroup: ...
+    def convert_local_to_pose(
+        self,
+        matrix: Iterable[Iterable[float]],
+        matrix_local: Iterable[Iterable[float]],
+        parent_matrix: Iterable[Iterable[float]] = (
+            (0.0, 0.0, 0.0, 0.0),
+            (0.0, 0.0, 0.0, 0.0),
+            (0.0, 0.0, 0.0, 0.0),
+            (0.0, 0.0, 0.0, 0.0),
+        ),
+        parent_matrix_local: Iterable[Iterable[float]] = (
+            (0.0, 0.0, 0.0, 0.0),
+            (0.0, 0.0, 0.0, 0.0),
+            (0.0, 0.0, 0.0, 0.0),
+            (0.0, 0.0, 0.0, 0.0),
+        ),
+        invert: bool = False,
+    ) -> mathutils.Matrix: ...
 
 class EditBone(bpy_struct):
     name: str
@@ -253,7 +272,9 @@ class PoseBone(bpy_struct, __CustomProperty):
     @scale.setter
     def scale(self, value: Iterable[float]) -> None: ...
 
-class ArmatureBones(bpy_prop_collection[Bone]): ...
+class ArmatureBones(bpy_prop_collection[Bone]):
+    active: Optional[Bone]  # TODO: Noneになるか？
+
 class OperatorProperties(bpy_struct): ...
 
 class UILayout(bpy_struct):
@@ -322,7 +343,36 @@ class UILayout(bpy_struct):
         text_ctxt: str = "",
         translate: bool = True,
         icon: str = "NONE",
+        results_are_suggestions: bool = False,
     ) -> "UILayout": ...
+    def template_ID_preview(
+        self,
+        data: AnyType,
+        property: str,
+        new: str = "",
+        open: str = "",
+        unlink: str = "",
+        rows: int = 0,
+        cols: int = 0,
+        filter: str = "ALL",
+        hide_buttons: bool = False,
+    ) -> None: ...
+    def template_list(
+        self,
+        listtype_name: str,
+        list_id: str,
+        dataptr: AnyType,
+        propname: str,
+        active_dataptr: AnyType,
+        active_propname: str,
+        item_dyntip_propname: str = "",
+        rows: int = 5,
+        maxrows: int = 5,
+        type: str = "DEFAULT",
+        columns: int = 9,
+        sort_reverse: bool = False,
+        sort_lock: bool = False,
+    ) -> None: ...
 
     alignment: str
     scale_x: float
@@ -350,7 +400,8 @@ class MeshUVLoopLayer(bpy_struct):
     name: str
     data: bpy_prop_collection[MeshUVLoop]
 
-class UVLoopLayers(bpy_prop_collection[MeshUVLoopLayer]): ...
+class UVLoopLayers(bpy_prop_collection[MeshUVLoopLayer]):
+    def new(self, name: str = "UVMap", do_init: bool = True) -> MeshUVLoopLayer: ...
 
 class MeshLoopTriangle(bpy_struct):
     vertices: tuple[int, int, int]
@@ -382,10 +433,13 @@ class MeshVertex(bpy_struct):
     def groups(self) -> bpy_prop_collection[VertexGroupElement]: ...
 
 class MeshVertices(bpy_prop_collection[MeshVertex]): ...
+class UnknownType(bpy_struct): ...
 
 class ShapeKey(bpy_struct):
     name: str
     value: float
+    @property
+    def data(self) -> bpy_prop_collection[UnknownType]: ...  # TODO: 多分書き漏れ
     def normals_split_get(self) -> Sequence[float]: ...  # TODO: 正しい型
 
 class Key(ID):
@@ -399,6 +453,16 @@ class MeshPolygon(bpy_struct):
     vertices: tuple[int, int, int]  # TODO: 正しい型を調べる
 
 class MeshPolygons(bpy_prop_collection[MeshPolygon]): ...
+
+class MeshLoopColor(bpy_struct):
+    color: Sequence[float]  # TODO: 正しい型を調べる
+
+class MeshLoopColorLayer(bpy_struct):
+    @property
+    def data(self) -> bpy_prop_collection[MeshLoopColor]: ...
+
+class LoopColors(bpy_prop_collection[MeshLoopColorLayer]):
+    def new(self, name: str = "Col", do_init: bool = True) -> MeshLoopColorLayer: ...
 
 class Mesh(ID):
     use_auto_smooth: bool
@@ -417,6 +481,8 @@ class Mesh(ID):
     def shape_keys(self) -> Optional[Key]: ...  # Optional
     @property
     def polygons(self) -> MeshPolygons: ...
+    @property
+    def vertex_colors(self) -> LoopColors: ...
 
     has_custom_normals: bool
     def calc_tangents(self, uvmap: str = "") -> None: ...
@@ -424,6 +490,19 @@ class Mesh(ID):
     def copy(self) -> "Mesh": ...  # ID.copy()
     def transform(self, matrix: mathutils.Matrix, shape_keys: bool = False) -> None: ...
     def calc_normals_split(self) -> None: ...
+    def update(
+        self, calc_edges: bool = False, calc_edges_loose: bool = False
+    ) -> None: ...
+    def from_pydata(
+        self,
+        vertices: Iterable[Iterable[float]],
+        edges: Iterable[Iterable[float]],
+        faces: Iterable[Iterable[float]],
+    ) -> None: ...
+    def create_normals_split(self) -> None: ...
+    def normals_split_custom_set_from_vertices(
+        self, normals: Iterable[Iterable[float]]
+    ) -> None: ...
 
 class ArmatureEditBones(bpy_prop_collection[EditBone]):
     def new(self, name: str) -> EditBone: ...
@@ -465,7 +544,10 @@ class NodeSocket(bpy_struct):
     name: str
     show_expanded: bool
     type: str
-    links: list["NodeLink"]
+    @property
+    def links(self) -> list["NodeLink"]: ...
+    @property
+    def node(self) -> "Node": ...
 
 class NodeSocketStandard(NodeSocket): ...
 
@@ -617,13 +699,6 @@ class ColorMapping(bpy_struct):
     saturation: float
     use_color_ramp: bool
 
-class TexMapping(bpy_struct):
-    # incomplete
-    mapping: str
-    mapping_x: str
-    mapping_y: str
-    mapping_z: str
-
 class ShaderNodeTexWave(ShaderNode):
     bands_direction: str
     color_mapping: ColorMapping
@@ -671,12 +746,29 @@ class ShaderNodeTexMusgrave(ShaderNode):
 class ShaderNodeTexMagic(ShaderNode):
     turbulence_depth: int
 
+class TexMapping(bpy_struct):
+    @property
+    def translation(self) -> mathutils.Vector: ...
+    @translation.setter
+    def translation(self, value: Iterable[float]) -> None: ...
+    @property
+    def scale(self) -> mathutils.Vector: ...
+    @scale.setter
+    def scale(self, value: Iterable[float]) -> None: ...
+
+    mapping: str
+    mapping_x: str
+    mapping_y: str
+    mapping_z: str
+
 class ShaderNodeTexImage(ShaderNode):
     extension: str
     image: Optional[Image]
     interpolation: str
     projection: str
     projection_blend: float
+    @property
+    def texture_mapping(self) -> TexMapping: ...
 
 class ShaderNodeTexIES(ShaderNode):
     filepath: str
@@ -928,6 +1020,7 @@ class Object(ID):
     def animation_data(self) -> Optional[AnimData]: ...  # TODO: 本当にOptionalか確認
     @property
     def vrm_addon_extension(self) -> VrmAddonObjectExtensionPropertyGroup: ...
+    def shape_key_add(self, name: str = "Key", from_mix: bool = True) -> ShapeKey: ...
 
 class PreferencesView:
     use_translate_interface: bool
@@ -996,7 +1089,12 @@ class Modifier(bpy_struct):
     # TODO: 本当はbpy_structのメソッド
     def __setitem__(self, key: str, value: object) -> None: ...
 
-class PropertyGroup(bpy_struct): ...
+class PropertyGroup(bpy_struct):
+    # TODO: 本当はbpy_structのメソッド
+    def get(self, key: str, default: object = None) -> object: ...
+    # TODO: 本当はbpy_structのメソッド
+    def __setitem__(self, key: str, value: object) -> None: ...
+
 class OperatorFileListElement(PropertyGroup): ...
 
 class Constraint(bpy_struct):
@@ -1223,7 +1321,13 @@ class BlendData:
 
 class Operator(bpy_struct):
     bl_idname: str
-    layout: UILayout
+    @property
+    def layout(self) -> UILayout: ...
+
+class Panel(bpy_struct):
+    bl_idname: str
+    @property
+    def layout(self) -> UILayout: ...
 
 TOPBAR_MT_file_import: MutableSequence[Callable[[Operator, Context], None]]
 TOPBAR_MT_file_export: MutableSequence[Callable[[Operator, Context], None]]

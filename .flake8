@@ -7,7 +7,15 @@ ignore-names=
     bpy_prop_collection
     bpy_prop_array
     bpy_struct
+    template_ID_preview
+    BoolProperty
+    CollectionProperty
+    EnumProperty
+    FloatProperty
+    FloatVectorProperty
+    IntProperty
     PointerProperty
+    StringProperty
     Diagonal
     Translation
     Rotation
