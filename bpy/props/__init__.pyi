@@ -28,7 +28,9 @@ def CollectionProperty(
     tags: set[str] = ...,
 ) -> __CollectionPropertyElement: ...
 def EnumProperty(
-    items: Sequence[tuple[int]],
+    items: Union[
+        Sequence[tuple[str, str, str, int]], Sequence[tuple[str, str, str, str, int]]
+    ],
     name: str = "",
     description: str = "",
     default: Optional[Union[str, int]] = None,  # setも受け取れるらしいが仕様が読み取れなかった

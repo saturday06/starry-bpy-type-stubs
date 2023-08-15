@@ -85,6 +85,29 @@ class CollectionProperty(Property):
     def __len__(self) -> int: ...  # TODO: undocumented
     def __iter__(self) -> Iterator[Property]: ...  # TODO: undocumented
 
+class Gizmo(bpy_struct):
+    alpha: float
+    alpha_highlight: float
+    color: tuple[float, float, float]
+    color_highlight: tuple[float, float, float]
+    matrix_basis: mathutils.Matrix  # TODO: 型はMatrix?
+    scale_basis: float
+
+    def target_set_prop(
+        self, target: str, data: AnyType, property: str, index: int = -1
+    ) -> None: ...
+
+    # GIZMO_GT_move_3d
+    draw_style: str
+    draw_options: set[str]
+
+class Gizmos(bpy_prop_collection[Gizmo]):
+    def new(self, type: str) -> Gizmo: ...
+
+class GizmoGroup(bpy_struct):
+    @property
+    def gizmos(self) -> Gizmos: ...
+
 class ColorManagedInputColorspaceSettings(bpy_struct):
     name: str
 
@@ -399,6 +422,7 @@ class MeshUVLoop(bpy_struct):
 class MeshUVLoopLayer(bpy_struct):
     name: str
     data: bpy_prop_collection[MeshUVLoop]
+    active_render: bool
 
 class UVLoopLayers(bpy_prop_collection[MeshUVLoopLayer]):
     def new(self, name: str = "UVMap", do_init: bool = True) -> MeshUVLoopLayer: ...
@@ -450,6 +474,7 @@ class Key(ID):
 
 class MeshPolygon(bpy_struct):
     material_index: int
+    use_smooth: bool
     vertices: tuple[int, int, int]  # TODO: 正しい型を調べる
 
 class MeshPolygons(bpy_prop_collection[MeshPolygon]): ...
@@ -503,6 +528,9 @@ class Mesh(ID):
     def normals_split_custom_set_from_vertices(
         self, normals: Iterable[Iterable[float]]
     ) -> None: ...
+    def validate(
+        self, verbose: bool = False, clean_customdata: bool = True
+    ) -> bool: ...
 
 class ArmatureEditBones(bpy_prop_collection[EditBone]):
     def new(self, name: str) -> EditBone: ...
@@ -529,11 +557,16 @@ class NodeSocketInterface(bpy_struct):
     description: str
     name: str
     bl_socket_idname: str
-    type: str  # ドキュメントには存在しない
+    @property
+    def identifier(self) -> str: ...
 
     # bpy.app.version >= (3, 0, 0)
     attribute_domain: str
     bl_label: str
+
+class NodeSocketInterfaceStandard(NodeSocketInterface):
+    @property
+    def type(self) -> str: ...
 
 class NodeSocket(bpy_struct):
     display_shape: str
@@ -952,11 +985,15 @@ class MaterialSlot(bpy_struct):
 
 class ObjectModifiers(bpy_prop_collection["Modifier"]):
     def new(self, name: str, type: str) -> "Modifier": ...
+    def clear(self) -> None: ...
 
 class VertexGroup(bpy_struct):
     name: str
+    def add(self, index: Sequence[int], weight: float, type: str) -> None: ...
 
-class VertexGroups(bpy_prop_collection[VertexGroup]): ...
+class VertexGroups(bpy_prop_collection[VertexGroup]):
+    def new(self, name: str = "Group") -> VertexGroup: ...
+    def clear(self) -> None: ...
 
 class Object(ID):
     name: str
@@ -1021,6 +1058,9 @@ class Object(ID):
     @property
     def vrm_addon_extension(self) -> VrmAddonObjectExtensionPropertyGroup: ...
     def shape_key_add(self, name: str = "Key", from_mix: bool = True) -> ShapeKey: ...
+    def select_get(self, view_layer: Optional[ViewLayer] = None) -> bool: ...
+    def hide_get(self, view_layer: Optional[ViewLayer] = None) -> bool: ...
+    def hide_set(self, state: bool, view_layer: Optional[ViewLayer] = None) -> bool: ...
 
 class PreferencesView:
     use_translate_interface: bool
@@ -1080,6 +1120,7 @@ class Modifier(bpy_struct):
     show_expanded: bool
     show_in_editmode: bool
     show_viewport: bool
+    show_render: bool
 
     @property
     def type(self) -> str: ...
@@ -1088,6 +1129,12 @@ class Modifier(bpy_struct):
     def get(self, key: str, default: object = None) -> object: ...
     # TODO: 本当はbpy_structのメソッド
     def __setitem__(self, key: str, value: object) -> None: ...
+
+class ArmatureModifier(Modifier):
+    object: Optional[bpy.types.Object]
+
+class NodesModifier(Modifier):
+    node_group: Optional[NodeTree]  # Noneになるかは要検証
 
 class PropertyGroup(bpy_struct):
     # TODO: 本当はbpy_structのメソッド
