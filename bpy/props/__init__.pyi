@@ -3,9 +3,11 @@ from typing import Callable, Optional, Sequence, TypeVar, Union
 import bpy
 import mathutils
 
-__PointerPropertyTarget = TypeVar("__PointerPropertyTarget")
-__CollectionPropertyElement = TypeVar("__CollectionPropertyElement")
-__CallbackSelf = TypeVar("__CallbackSelf", bound=bpy.types.PropertyGroup)
+__PointerPropertyTarget = TypeVar("__PointerPropertyTarget", bound=type)
+__CollectionPropertyElement = TypeVar("__CollectionPropertyElement", bound=type)
+__CallbackSelf = TypeVar(
+    "__CallbackSelf", bound=Union[bpy.types.PropertyGroup, bpy.types.Operator]
+)
 
 def BoolProperty(
     name: str = "",
@@ -20,7 +22,7 @@ def BoolProperty(
     set: Optional[Callable[[__CallbackSelf, bool], None]] = None,
 ) -> bool: ...
 def CollectionProperty(
-    type: type[__CollectionPropertyElement],
+    type: __CollectionPropertyElement,
     name: str = "",
     description: str = "",
     options: set[str] = ...,
@@ -77,10 +79,8 @@ def FloatVectorProperty(
     unit: str = "NONE",
     size: int = 3,
     update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
-    get: Optional[Callable[[__CallbackSelf], mathutils.Vector]] = None,
-    set: Optional[
-        Callable[[__CallbackSelf, mathutils.Vector], None]
-    ] = None,  # TODO: たしかVectorが来たけど自信がない
+    get: Optional[Callable[[__CallbackSelf], tuple[float, ...]]] = None,
+    set: Optional[Callable[[__CallbackSelf, Sequence[float]], None]] = None,
 ) -> mathutils.Vector: ...  # TODO: たしかVectorが返ったけど自信がない
 def IntProperty(
     name: str = "",
@@ -100,7 +100,7 @@ def IntProperty(
     set: Optional[Callable[[__CallbackSelf, int], None]] = None,
 ) -> int: ...
 def PointerProperty(
-    type: type[__PointerPropertyTarget],
+    type: __PointerPropertyTarget,
     name: str = "",
     description: str = "",
     options: set[str] = ...,

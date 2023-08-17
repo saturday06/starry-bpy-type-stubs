@@ -11,11 +11,14 @@ class BMElemSeq(Generic[__BMElemSeqElement]):
     def __getitem__(self, key: int) -> __BMElemSeqElement: ...
     def __iter__(self) -> Iterator[__BMElemSeqElement]: ...
 
+class BMLoopUV:
+    uv: mathutils.Vector
+
 class BMVert:
     index: int
     co: mathutils.Vector
 
-class BMLoopUV: ...
+    def __getitem__(self, value: BMLoopUV) -> mathutils.Vector: ...  # ドキュメントには存在しない
 
 class BMLayerCollection:
     def __getitem__(self, key: str) -> BMLoopUV: ...  # ドキュメントに記載はない?
@@ -50,6 +53,7 @@ class BMLoop:
     def face(self) -> "BMFace": ...
     @property
     def vert(self) -> BMVert: ...
+    def __getitem__(self, uv: BMLoopUV) -> BMLoopUV: ...  # TODO: ドキュメントに存在しない
 
 class BMLoopSeq:
     @property

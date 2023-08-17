@@ -42,7 +42,10 @@ class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
     ) -> Optional[__BpyPropCollectionElement]: ...
     def __contains__(self, key: str) -> bool: ...
     def __iter__(self) -> Iterator[__BpyPropCollectionElement]: ...
+    @overload
     def __getitem__(self, key: Union[int, str]) -> __BpyPropCollectionElement: ...
+    @overload
+    def __getitem__(self, index: slice) -> tuple[__BpyPropCollectionElement, ...]: ...
     def __len__(self) -> int: ...
     def remove(self, element: __BpyPropCollectionElement) -> None: ...
     def keys(self) -> KeysView[str]: ...
@@ -66,6 +69,8 @@ class __CustomProperty:
     def __setitem__(self, key: str, value: object) -> None: ...
     def __delitem__(self, key: str) -> None: ...
     def get(self, key: str, default: object = None) -> object: ...
+    def keys(self) -> KeysView[str]: ...
+    def items(self) -> ItemsView[str, object]: ...
 
 class ID(bpy_struct, __CustomProperty):
     name: str
@@ -84,6 +89,7 @@ class CollectionProperty(Property):
     def add(self) -> Property: ...  # TODO: undocumented
     def __len__(self) -> int: ...  # TODO: undocumented
     def __iter__(self) -> Iterator[Property]: ...  # TODO: undocumented
+    def clear(self) -> None: ...  # TODO: undocumented
 
 class Gizmo(bpy_struct):
     alpha: float
@@ -200,6 +206,8 @@ class Bone(bpy_struct, __CustomProperty):
     name: str
     parent: Optional["Bone"]
     use_inherit_rotation: bool
+    select: bool
+    tail_radius: float
 
     @property
     def head(self) -> mathutils.Vector: ...  # TODO: 型が正しいか？
@@ -409,9 +417,11 @@ class Addon(bpy_struct):
     preferences: AddonPreferences
 
 class Addons(bpy_prop_collection[Addon]): ...
+
 class IDMaterials(
     bpy_prop_collection[Optional["Material"]]
-): ...  # ドキュメントにはMaterialと書いてあるが実際にはOptional[Material]
+):  # ドキュメントにはMaterialと書いてあるが実際にはOptional[Material]の可能性あり
+    def append(self, value: "Material") -> None: ...  # TODO: ドキュメントには存在しない
 
 class Curve(ID):
     materials: IDMaterials
@@ -455,6 +465,8 @@ class MeshVertex(bpy_struct):
     normal: mathutils.Vector  # TODO: 正しい型を調べる
     @property
     def groups(self) -> bpy_prop_collection[VertexGroupElement]: ...
+    @property
+    def index(self) -> int: ...
 
 class MeshVertices(bpy_prop_collection[MeshVertex]): ...
 class UnknownType(bpy_struct): ...
@@ -476,6 +488,8 @@ class MeshPolygon(bpy_struct):
     material_index: int
     use_smooth: bool
     vertices: tuple[int, int, int]  # TODO: 正しい型を調べる
+    @property
+    def loop_total(self) -> int: ...
 
 class MeshPolygons(bpy_prop_collection[MeshPolygon]): ...
 
@@ -550,7 +564,12 @@ class Armature(ID):
     @property
     def vrm_addon_extension(self) -> VrmAddonArmatureExtensionPropertyGroup: ...
 
+class TextLine(bpy_struct):
+    body: str
+
 class Text(ID):
+    @property
+    def lines(self) -> bpy_prop_collection[TextLine]: ...
     def write(self, text: str) -> None: ...
 
 class NodeSocketInterface(bpy_struct):
@@ -1061,6 +1080,8 @@ class Object(ID):
     def select_get(self, view_layer: Optional[ViewLayer] = None) -> bool: ...
     def hide_get(self, view_layer: Optional[ViewLayer] = None) -> bool: ...
     def hide_set(self, state: bool, view_layer: Optional[ViewLayer] = None) -> bool: ...
+    @property
+    def children(self) -> Sequence["Object"]: ...  # ドキュメントでは型が不明瞭
 
 class PreferencesView:
     use_translate_interface: bool
@@ -1137,10 +1158,14 @@ class NodesModifier(Modifier):
     node_group: Optional[NodeTree]  # Noneになるかは要検証
 
 class PropertyGroup(bpy_struct):
+    name: str  # TODO: 本当にあるか?
+
     # TODO: 本当はbpy_structのメソッド
     def get(self, key: str, default: object = None) -> object: ...
     # TODO: 本当はbpy_structのメソッド
     def __setitem__(self, key: str, value: object) -> None: ...
+    # TODO: 本当はbpy_structのメソッド
+    def __delitem__(self, key: str) -> None: ...
 
 class OperatorFileListElement(PropertyGroup): ...
 
@@ -1148,14 +1173,16 @@ class Constraint(bpy_struct):
     name: str
     is_valid: bool
     mute: bool
+    influence: float
 
 class ObjectConstraints(bpy_prop_collection[Constraint]):
     def new(self, type: str) -> Constraint: ...
 
 class DampedTrackConstraint(Constraint):
-    target: Optional[Object]
-    subtarget: str
     head_tail: float
+    subtarget: str
+    target: Optional[Object]
+    track_axis: str
 
 class CopyRotationConstraint(Constraint):
     target: Optional[Object]
@@ -1331,12 +1358,31 @@ class BlendDataLibraries(bpy_prop_collection[Library]):
 
 class BlendDataNodeTrees(bpy_prop_collection[NodeTree]):
     def new(self, name: str, type: str) -> NodeTree: ...
-    def append(self, node_group: NodeTree) -> None: ...  # ドキュメントに存在しない
+    def append(self, value: NodeTree) -> None: ...  # ドキュメントに存在しない
 
 class BlendDataActions(bpy_prop_collection[Action]):
     def new(self, name: str) -> Action: ...
 
 class BlendDataScenes(bpy_prop_collection[Scene]): ...
+
+class MetaElement(bpy_struct):
+    co: mathutils.Vector
+    hide: bool
+    radius: float
+    rotation: mathutils.Quaternion
+
+class MetaBallElements(bpy_prop_collection[MetaElement]):
+    def new(self, type: str = "BALL") -> MetaElement: ...
+
+class MetaBall(ID):
+    threshold: float
+    resolution: float
+
+    @property
+    def elements(self) -> MetaBallElements: ...
+
+class BlendDataMetaBalls(bpy_prop_collection[MetaBall]):
+    def new(self, name: str) -> MetaBall: ...
 
 class BlendData:
     @property
@@ -1365,9 +1411,12 @@ class BlendData:
     def scenes(self) -> BlendDataScenes: ...
     @property
     def shape_keys(self) -> bpy_prop_collection[Key]: ...
+    @property
+    def metaballs(self) -> BlendDataMetaBalls: ...
 
 class Operator(bpy_struct):
     bl_idname: str
+    bl_label: str
     @property
     def layout(self) -> UILayout: ...
 
