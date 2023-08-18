@@ -34,6 +34,8 @@ class bpy_struct:
         # options: set[str] = set(), デフォルト値が共有のmutable変数であるとしてpylintに警告を受ける。必要になったらその時考える。
     ) -> bool: ...
 
+    bl_rna: "BlenderRNA"  # ドキュメントには存在しない。TODO: read only
+
 __BpyPropCollectionElement = TypeVar("__BpyPropCollectionElement")
 
 class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
@@ -61,6 +63,7 @@ class bpy_prop_array(Generic[__BpyPropArrayElement]):
     def __getitem__(self, index: int) -> __BpyPropArrayElement: ...
     @overload
     def __getitem__(self, index: slice) -> tuple[__BpyPropArrayElement, ...]: ...
+    def __setitem__(self, index: int, value: __BpyPropArrayElement) -> None: ...
 
 # カスタムプロパティ対応クラス。2.93ではID,Bone,PoseBoneのみ
 # https://docs.blender.org/api/2.93/bpy.types.bpy_struct.html#bpy.types.bpy_struct.values
@@ -83,13 +86,63 @@ class ID(bpy_struct, __CustomProperty):
 # この型はUILayout.prop_searchで使うけど、ドキュメントが曖昧なためいまいちな定義になっている
 AnyType = Union["ID", "BlendData", "Operator", "PropertyGroup"]
 
-class Property(bpy_struct): ...
+class Property(bpy_struct):
+    @property
+    def name(self) -> str: ...
+    @property
+    def identifier(self) -> str: ...
+
+class PointerProperty(Property):
+    @property
+    def fixed_type(self) -> type[bpy_struct]: ...  # TODO: ここの正しい定義を調べる
+
+class FloatProperty(Property):
+    @property
+    def is_array(self) -> bool: ...
+
+class IntProperty(Property):
+    @property
+    def is_array(self) -> bool: ...
+
+class BoolProperty(Property):
+    @property
+    def is_array(self) -> bool: ...
+
+class EnumProperty(Property): ...
+class StringProperty(Property): ...
 
 class CollectionProperty(Property):
+    def fixed_type(self) -> type: ...  # TODO: 正しい実装を調べる必要がある
     def add(self) -> Property: ...  # TODO: undocumented
     def __len__(self) -> int: ...  # TODO: undocumented
     def __iter__(self) -> Iterator[Property]: ...  # TODO: undocumented
     def clear(self) -> None: ...  # TODO: undocumented
+    @overload
+    def __getitem__(self, index: int) -> Property: ...  # TODO: undocumented
+    @overload
+    def __getitem__(
+        self, index: slice
+    ) -> tuple[Property, ...]: ...  # TODO: undocumented
+    def remove(self, index: int) -> None: ...  # TODO: undocumented
+    def values(self) -> ValuesView[Property]: ...  # TODO: undocumented
+
+class PropertyGroup(Property):
+    name: str
+
+    # TODO: 本当はbpy_structのメソッド
+    def get(self, key: str, default: object = None) -> object: ...
+    # TODO: 本当はbpy_structのメソッド
+    def __setitem__(self, key: str, value: object) -> None: ...
+    # TODO: 本当はbpy_structのメソッド
+    def __delitem__(self, key: str) -> None: ...
+
+class BlenderRNA(bpy_struct):
+    @property
+    def properties(
+        self,
+    ) -> bpy_prop_collection[
+        Property
+    ]: ...  # ドキュメントには存在しない。TODO: これがbpy.types.Propertyと一致するかは要検証
 
 class Gizmo(bpy_struct):
     alpha: float
@@ -261,6 +314,7 @@ class EditBone(bpy_struct):
     def tail(self, value: Iterable[float]) -> None: ...
 
     parent: Optional["EditBone"]
+    length: float
     roll: float
     use_local_location: bool
     use_connect: bool
@@ -414,17 +468,17 @@ class AddonPreferences(bpy_struct):
     layout: UILayout  # TODO: No documentation
 
 class Addon(bpy_struct):
-    preferences: AddonPreferences
+    @property
+    def preferences(self) -> AddonPreferences: ...
 
 class Addons(bpy_prop_collection[Addon]): ...
 
-class IDMaterials(
-    bpy_prop_collection[Optional["Material"]]
-):  # ドキュメントにはMaterialと書いてあるが実際にはOptional[Material]の可能性あり
+class IDMaterials(bpy_prop_collection[Optional["Material"]]):
     def append(self, value: "Material") -> None: ...  # TODO: ドキュメントには存在しない
 
 class Curve(ID):
-    materials: IDMaterials
+    @property
+    def materials(self) -> IDMaterials: ...
 
 class MeshUVLoop(bpy_struct):
     uv: mathutils.Vector  # TODO: 正しい方を調べる
@@ -1050,10 +1104,12 @@ class Object(ID):
 
     rotation_mode: str
     rotation_quaternion: mathutils.Quaternion  # TODO: 型あってる?
+    rotation_euler: mathutils.Euler
 
     @property
     def bound_box(self) -> bpy_prop_array[bpy_prop_array[float]]: ...
 
+    matrix_basis: mathutils.Matrix  # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
     matrix_world: mathutils.Matrix  # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
     matrix_local: mathutils.Matrix  # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
     scale: mathutils.Vector  # ドキュメントには3要素のfloat配列って書いてあるけど実際にはVector
@@ -1086,9 +1142,12 @@ class Object(ID):
 class PreferencesView:
     use_translate_interface: bool
 
-class Preferences:
+class Preferences(bpy_struct):
     view: PreferencesView
     addons: Addons
+
+class UIList(bpy_struct):
+    layout_type: str
 
 class NodeLink(bpy_struct):
     is_valid: bool
@@ -1122,7 +1181,7 @@ class Material(ID):
     blend_method: str
 
     @property
-    def node_tree(self) -> NodeTree: ...  # TODO: 無いことがある?
+    def node_tree(self) -> Optional[NodeTree]: ...
 
     use_nodes: bool
     alpha_threshold: float
@@ -1130,7 +1189,7 @@ class Material(ID):
     use_backface_culling: bool
     show_transparent_back: bool
     alpha_method: str
-    diffuse_color: mathutils.Vector  # TODO 正しい型
+    diffuse_color: bpy_prop_array[float]
     roughness: float
 
     @property
@@ -1156,16 +1215,6 @@ class ArmatureModifier(Modifier):
 
 class NodesModifier(Modifier):
     node_group: Optional[NodeTree]  # Noneになるかは要検証
-
-class PropertyGroup(bpy_struct):
-    name: str  # TODO: 本当にあるか?
-
-    # TODO: 本当はbpy_structのメソッド
-    def get(self, key: str, default: object = None) -> object: ...
-    # TODO: 本当はbpy_structのメソッド
-    def __setitem__(self, key: str, value: object) -> None: ...
-    # TODO: 本当はbpy_structのメソッド
-    def __delitem__(self, key: str) -> None: ...
 
 class OperatorFileListElement(PropertyGroup): ...
 
