@@ -25,10 +25,10 @@ pylint = "*"
 pyright = "*"
 
 [tool.black]
-target-version = ['py39']
+target-version = ["py39"]
 
 [tool.mypy]
-python_version = 3.9
+python_version = "3.9"
 strict = true
 disallow_any_decorated = true
 disallow_any_explicit = true
@@ -41,7 +41,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.pylint.main]
-py-version = 3.9
+py-version = "3.9"
 
 [tool.pylint.format]
 max-module-lines = 2000
