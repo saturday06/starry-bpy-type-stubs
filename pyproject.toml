@@ -30,12 +30,26 @@ target-version = ['py39']
 [tool.mypy]
 python_version = 3.9
 strict = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_expr = true
 
 [[tool.mypy.overrides]]
 module = [
     "io_scene_vrm.*",
 ]
 ignore_missing_imports = true
+
+[tool.pylint.main]
+py-version = 3.9
+
+[tool.pylint.format]
+max-module-lines = 2000
+
+[tool.pylint.design]
+max-args = 46
+max-locals = 46
+min-public-methods = 0
 
 [tool.pylint."messages control"]
 disable = [
@@ -47,13 +61,14 @@ disable = [
     "missing-module-docstring",
     "multiple-statements",
     "redefined-builtin",
-    "too-few-public-methods",
-    "too-many-arguments",
-    "too-many-lines",
-    "too-many-locals",
     "unused-argument",
 ]
-extension-pkg-allow-list = ["bpy"]
+
+[tool.pyright]
+pythonVersion = "3.9"
+pythonPlatform = "All"
+typeCheckingMode = "strict"
+reportMissingModuleSource = false
 
 [build-system]
 requires = ["poetry-core"]
