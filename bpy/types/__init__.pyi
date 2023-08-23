@@ -125,6 +125,7 @@ class CollectionProperty(Property):
     ) -> tuple[Property, ...]: ...  # TODO: undocumented
     def remove(self, index: int) -> None: ...  # TODO: undocumented
     def values(self) -> ValuesView[Property]: ...  # TODO: undocumented
+    def move(self, from_index: int, to_index: int) -> None: ...  # TODO: undocumented
 
 class PropertyGroup(Property):
     name: str
