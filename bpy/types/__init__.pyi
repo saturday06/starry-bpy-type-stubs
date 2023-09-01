@@ -30,7 +30,7 @@ class bpy_struct:
         index: int = -1,
         frame: float = bpy.context.scene.frame_current,
         group: str = "",
-        # options: set[str] = set(), デフォルト値が共有のmutable変数であるとしてpylintに警告を受ける。必要になったらその時考える。
+        options: set[str] = ...,
     ) -> bool: ...
 
     bl_rna: "BlenderRNA"  # ドキュメントには存在しない。TODO: read only
