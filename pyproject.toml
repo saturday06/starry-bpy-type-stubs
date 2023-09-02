@@ -46,8 +46,8 @@ py-version = "3.9"
 max-module-lines = 2000
 
 [tool.pylint.design]
-max-args = 46
-max-locals = 46
+max-args = 50
+max-locals = 50
 min-public-methods = 0
 
 [tool.pylint."messages control"]
