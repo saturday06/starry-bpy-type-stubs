@@ -56,7 +56,6 @@ def gltf(
     export_displacement: bool = False,
     will_save_settings: bool = False,
     filter_glob: str = "*.glb;*.gltf",
-
     # bpy.app.version >= (3, 6)
     export_rest_position_armature: bool = True,
 ) -> set[str]: ...
