@@ -3,10 +3,20 @@ from typing import Optional
 import bpy
 
 def save_as_mainfile(
-    filepath: str, copy: bool = False, check_existing: bool = False
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
+    filepath: str,
+    copy: bool = False,
+    check_existing: bool = False,
 ) -> set[str]: ...
-def quit_blender() -> None: ...
+def quit_blender(
+    execution_context: str = "EXEC_DEFAULT",
+) -> None: ...
 def open_mainfile(
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     hide_props_region: bool = True,
     filter_blender: bool = True,
@@ -34,6 +44,9 @@ def open_mainfile(
     state: int = 0,
 ) -> set[str]: ...
 def append(
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     directory: str = "",
     filename: str = "",
@@ -68,21 +81,30 @@ def append(
     use_recursive: bool = True,
 ) -> set[str]: ...
 def redraw_timer(
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     type: str = "DRAW",
     iterations: int = 10,
     time_limit: float = 0.0,
 ) -> None: ...
 def vrm_export_human_bones_assignment(
-    execution_context: str,
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     armature_object_name: str,
 ) -> set[str]: ...
 def vrm_export_confirmation(
-    execution_context: str,
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     armature_object_name: str,
 ) -> set[str]: ...
 def vrm_export_armature_selection(execution_context: str) -> set[str]: ...
 def vrm_license_warning(
-    execution_context: str,
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     import_anyway: bool,
     license_confirmations: list[dict[str, str]],
     filepath: str,
@@ -93,10 +115,14 @@ def vrm_gltf2_addon_disabled_warning(
     execution_context: str = "EXEC_DEFAULT",
 ) -> set[str]: ...
 def vrma_import_prerequisite(
-    execution_context: str,
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     armature_object_name: str,
 ) -> set[str]: ...
 def vrma_export_prerequisite(
-    execution_context: str,
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     armature_object_name: str,
 ) -> set[str]: ...

@@ -1,15 +1,22 @@
 def vrm(
     execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     ignore_warning: bool = True,
     armature_object_name: str = "",
 ) -> set[str]: ...
 def vrma(
     execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     armature_object_name: str = "",
 ) -> set[str]: ...
 def gltf(
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     check_existing: bool = True,
     export_format: str = "GLB",

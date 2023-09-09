@@ -1,4 +1,7 @@
 def smart_project(
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     angle_limit: float = 1.15192,
     margin_method: str = "SCALED",
     island_margin: float = 0.0,

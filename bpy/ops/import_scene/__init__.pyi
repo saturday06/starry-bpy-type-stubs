@@ -4,12 +4,16 @@ import bpy
 
 def vrm(
     execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     extract_textures_into_folder: bool = True,
     make_new_texture_folder: bool = True,
 ) -> set[str]: ...
 def gltf(
     execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     filter_glob: str = "*.glb;*.gltf",
     files: Optional[
@@ -24,6 +28,8 @@ def gltf(
 ) -> set[str]: ...
 def vrma(
     execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
     filepath: str = "",
     armature_object_name: str = "",
 ) -> set[str]: ...

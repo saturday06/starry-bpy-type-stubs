@@ -63,6 +63,9 @@ disable = [
     "unused-argument",
 ]
 
+[tool.pylint.similar]
+min-similarity-lines = 12
+
 [tool.pyright]
 pythonVersion = "3.9"
 pythonPlatform = "All"

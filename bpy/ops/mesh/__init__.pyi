@@ -1,4 +1,13 @@
-def select_all(action: str = "TOGGLE") -> set[str]: ...
+def select_all(
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
+    action: str = "TOGGLE",
+) -> set[str]: ...
 def quads_convert_to_tris(
-    quad_method: str = "BEAUTY", ngon_method: str = "BEAUTY"
+    execution_context: str = "EXEC_DEFAULT",
+    /,
+    *,
+    quad_method: str = "BEAUTY",
+    ngon_method: str = "BEAUTY",
 ) -> set[str]: ...
