@@ -1177,10 +1177,14 @@ class NodeTreeOutputs(bpy_prop_collection[NodeSocketInterface]):
     def new(self, type: str, name: str) -> NodeSocketInterface: ...
 
 class NodeTree(ID):
-    links: NodeLinks
-    nodes: Nodes
-    inputs: NodeTreeInputs
-    outputs: NodeTreeOutputs
+    @property
+    def links(self) -> NodeLinks: ...
+    @property
+    def nodes(self) -> Nodes: ...
+    @property
+    def inputs(self) -> NodeTreeInputs: ...
+    @property
+    def outputs(self) -> NodeTreeOutputs: ...
 
 class Material(ID):
     name: str
