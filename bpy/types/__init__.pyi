@@ -1176,15 +1176,54 @@ class NodeTreeInputs(bpy_prop_collection[NodeSocketInterface]):
 class NodeTreeOutputs(bpy_prop_collection[NodeSocketInterface]):
     def new(self, type: str, name: str) -> NodeSocketInterface: ...
 
+class NodeTreeInterfaceItem(bpy_struct):
+    @property
+    def item_type(self) -> str: ...
+
+class NodeTreeInterfaceSocket(NodeTreeInterfaceItem):
+    attribute_domain: str
+    bl_socket_idname: str
+    default_attribute_name: str
+    description: str
+    hide_in_modifier: bool
+    hide_value: bool
+    @property
+    def identifier(self) -> str: ...
+    in_out: str
+    name: str
+    socket_type: str
+
+class NodeTreeInterfacePanel(NodeTreeInterfaceItem): ...
+
+class NodeTreeInterface(bpy_struct):
+    @property
+    def ui_items(self) -> bpy_prop_collection[NodeTreeInterfaceItem]: ...
+    def new_socket(
+        self,
+        name: str,
+        *,  # キーワード専用とはドキュメントに記載は無いが?
+        description: str = "",
+        in_out: set[str] = ...,  # ドキュメントにはstrと書いてあるが?
+        socket_type: str = "DEFAULT",
+        parent: Optional[NodeTreeInterfacePanel] = None,
+    ) -> NodeTreeInterfaceSocket: ...
+    def clear(self) -> None: ...
+
 class NodeTree(ID):
     @property
     def links(self) -> NodeLinks: ...
     @property
     def nodes(self) -> Nodes: ...
+
+    # bpy.app.version < (4, 0)
     @property
     def inputs(self) -> NodeTreeInputs: ...
     @property
     def outputs(self) -> NodeTreeOutputs: ...
+
+    # bpy.app.version >= (4, 0)
+    @property
+    def interface(self) -> NodeTreeInterface: ...
 
 class Material(ID):
     name: str
