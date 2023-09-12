@@ -1193,6 +1193,7 @@ class NodeTreeInterfaceSocket(NodeTreeInterfaceItem):
     name: str
     socket_type: str
 
+class NodeTreeInterfaceSocketFloatFactor(NodeTreeInterfaceSocket): ...
 class NodeTreeInterfacePanel(NodeTreeInterfaceItem): ...
 
 class NodeTreeInterface(bpy_struct):
