@@ -372,6 +372,8 @@ class UILayout(bpy_struct):
     def box(self) -> "UILayout": ...
     def column(
         self,
+        /,
+        *,
         align: bool = False,
         heading: str = "",
         heading_ctxt: str = "",
@@ -379,6 +381,8 @@ class UILayout(bpy_struct):
     ) -> "UILayout": ...
     def row(
         self,
+        /,
+        *,
         align: bool = False,
         heading: str = "",
         heading_ctxt: str = "",
@@ -388,6 +392,8 @@ class UILayout(bpy_struct):
         self,
         data: bpy_struct,  # TODO: AnyType
         property: str,
+        /,
+        *,
         text: str = "",
         text_ctxt: str = "",
         translate: bool = True,
@@ -405,16 +411,26 @@ class UILayout(bpy_struct):
     ) -> "UILayout": ...
     def label(
         self,
+        /,
+        *,
         text: str = "",
         text_ctxt: str = "",
         translate: bool = True,
         icon: str = "NONE",
         icon_value: int = 0,
     ) -> "UILayout": ...
-    def split(self, factor: float = 0.0, align: bool = False) -> "UILayout": ...
+    def split(
+        self,
+        /,
+        *,
+        factor: float = 0.0,
+        align: bool = False,
+    ) -> "UILayout": ...
     def operator(
         self,
         operator: str,
+        /,
+        *,
         text: str = "",
         text_ctxt: str = "",
         translate: bool = True,
@@ -423,13 +439,20 @@ class UILayout(bpy_struct):
         depress: bool = False,
         icon_value: int = 0,
     ) -> OperatorProperties: ...
-    def separator(self, factor: float = 1.0) -> None: ...
+    def separator(
+        self,
+        /,
+        *,
+        factor: float = 1.0,
+    ) -> None: ...
     def prop_search(
         self,
         data: AnyType,
         property: str,
         search_data: AnyType,
         search_property: str,
+        /,
+        *,
         text: str = "",
         text_ctxt: str = "",
         translate: bool = True,
