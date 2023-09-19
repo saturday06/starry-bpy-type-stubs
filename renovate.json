@@ -16,6 +16,14 @@
                 "patch"
             ],
             "automerge": true
+        },
+        {
+            "matchPackageNames": [
+                "bpy",
+                "python"
+            ],
+            "rangeStrategy": "in-range-only",
+            "automerge": true
         }
     ]
 }
