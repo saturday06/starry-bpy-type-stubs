@@ -1208,6 +1208,7 @@ class NodeTreeInterfaceSocket(NodeTreeInterfaceItem):
     bl_socket_idname: str
     default_attribute_name: str
     description: str
+    force_non_field: bool
     hide_in_modifier: bool
     hide_value: bool
     @property
@@ -1221,13 +1222,13 @@ class NodeTreeInterfacePanel(NodeTreeInterfaceItem): ...
 
 class NodeTreeInterface(bpy_struct):
     @property
-    def ui_items(self) -> bpy_prop_collection[NodeTreeInterfaceItem]: ...
+    def items_tree(self) -> bpy_prop_collection[NodeTreeInterfaceItem]: ...
     def new_socket(
         self,
         name: str,
         *,  # キーワード専用とはドキュメントに記載は無いが?
         description: str = "",
-        in_out: set[str] = ...,  # ドキュメントにはstrと書いてあるが?
+        in_out: str = ...,
         socket_type: str = "DEFAULT",
         parent: Optional[NodeTreeInterfacePanel] = None,
     ) -> NodeTreeInterfaceSocket: ...
