@@ -670,6 +670,79 @@ class NodeSocketInterfaceStandard(NodeSocketInterface):
     @property
     def type(self) -> str: ...
 
+class NodeSocketInterfaceFloat(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceFloatAngle(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceFloatDistance(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceFloatFactor(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceFloatPercentage(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceFloatTime(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceFloatUnsigned(NodeSocketInterfaceStandard):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceColor(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float, float]  # TODO: これはカラー?
+
+class NodeSocketInterfaceVector(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceVectorAcceleration(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceVectorDirection(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceVectorEuler(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceVectorTranslation(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceVectorVelocity(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeSocketInterfaceVectorXYZ(NodeSocketInterfaceStandard):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
 class NodeSocket(bpy_struct):
     display_shape: str
     enabled: bool
@@ -1217,7 +1290,84 @@ class NodeTreeInterfaceSocket(NodeTreeInterfaceItem):
     name: str
     socket_type: str
 
-class NodeTreeInterfaceSocketFloatFactor(NodeTreeInterfaceSocket): ...
+class NodeTreeInterfaceSocketFloat(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatAngle(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatDistance(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatFactor(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatPercentage(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatTime(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatTimeAbsolute(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketFloatUnsigned(NodeTreeInterfaceSocket):
+    default_value: float
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketColor(NodeTreeInterfaceSocket):
+    default_value: tuple[float, float, float, float]
+
+class NodeTreeInterfaceSocketVector(NodeTreeInterfaceSocket):
+    default_value: tuple[float, float, float]
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketVectorAcceleration(NodeTreeInterfaceSocket):
+    default_value: mathutils.Vector
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketVectorDirection(NodeTreeInterfaceSocket):
+    default_value: mathutils.Vector
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketVectorEuler(NodeTreeInterfaceSocket):
+    default_value: mathutils.Euler
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketVectorTranslation(NodeTreeInterfaceSocket):
+    default_value: mathutils.Vector
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketVectorVelocity(NodeTreeInterfaceSocket):
+    default_value: mathutils.Vector
+    max_value: float
+    min_value: float
+
+class NodeTreeInterfaceSocketVectorXYZ(NodeTreeInterfaceSocket):
+    default_value: mathutils.Vector
+    max_value: float
+    min_value: float
+
 class NodeTreeInterfacePanel(NodeTreeInterfaceItem): ...
 
 class NodeTreeInterface(bpy_struct):
