@@ -1,24 +1,31 @@
 from typing import Union
 
-import bpy
+from bpy.types import (
+    AddonPreferences,
+    Operator,
+    Panel,
+    Preferences,
+    PropertyGroup,
+    UIList,
+)
 
 def register_class(
     t: Union[
-        type[bpy.types.Operator],
-        type[bpy.types.PropertyGroup],
-        type[bpy.types.Panel],
-        type[bpy.types.UIList],
-        type[bpy.types.Preferences],
-        type[bpy.types.AddonPreferences],
+        type[Operator],
+        type[PropertyGroup],
+        type[Panel],
+        type[UIList],
+        type[Preferences],
+        type[AddonPreferences],
     ]
 ) -> None: ...
 def unregister_class(
     t: Union[
-        type[bpy.types.Operator],
-        type[bpy.types.PropertyGroup],
-        type[bpy.types.Panel],
-        type[bpy.types.UIList],
-        type[bpy.types.Preferences],
-        type[bpy.types.AddonPreferences],
+        type[Operator],
+        type[PropertyGroup],
+        type[Panel],
+        type[UIList],
+        type[Preferences],
+        type[AddonPreferences],
     ]
 ) -> None: ...

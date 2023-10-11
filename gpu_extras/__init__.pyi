@@ -1,3 +1,3 @@
 # pyright: reportUnusedImport=false
 
-from . import batch
+from gpu_extras import batch

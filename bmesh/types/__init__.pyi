@@ -1,8 +1,8 @@
 from collections.abc import Iterator, Sequence
 from typing import Generic, Optional, TypeVar
 
-import bpy
 import mathutils
+from bpy.types import Mesh
 
 __BMElemSeqElement = TypeVar("__BMElemSeqElement")
 
@@ -82,10 +82,10 @@ class BMesh:
     @property
     def loops(self) -> BMLoopSeq: ...
     def free(self) -> None: ...
-    def to_mesh(self, mesh: bpy.types.Mesh) -> None: ...
+    def to_mesh(self, mesh: Mesh) -> None: ...
     def from_mesh(
         self,
-        mesh: bpy.types.Mesh,
+        mesh: Mesh,
         face_normals: bool = True,
         use_shape_key: bool = False,
         shape_key_index: int = 0,

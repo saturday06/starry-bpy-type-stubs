@@ -1,6 +1,6 @@
 from typing import Optional
 
-import bpy
+from bpy.types import OperatorFileListElement, bpy_prop_collection
 
 def save_as_mainfile(
     execution_context: str = "EXEC_DEFAULT",
@@ -50,9 +50,7 @@ def append(
     filepath: str = "",
     directory: str = "",
     filename: str = "",
-    files: Optional[
-        bpy.types.bpy_prop_collection[bpy.types.OperatorFileListElement]
-    ] = None,
+    files: Optional[bpy_prop_collection[OperatorFileListElement]] = None,
     filter_blender: bool = True,
     filter_backup: bool = False,
     filter_image: bool = False,

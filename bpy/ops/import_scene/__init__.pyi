@@ -1,6 +1,6 @@
 from typing import Optional
 
-import bpy
+from bpy.types import OperatorFileListElement, bpy_prop_collection
 
 def vrm(
     execution_context: str = "EXEC_DEFAULT",
@@ -16,9 +16,7 @@ def gltf(
     *,
     filepath: str = "",
     filter_glob: str = "*.glb;*.gltf",
-    files: Optional[
-        bpy.types.bpy_prop_collection[bpy.types.OperatorFileListElement]
-    ] = None,
+    files: Optional[bpy_prop_collection[OperatorFileListElement]] = None,
     loglevel: int = 0,
     import_pack_images: bool = True,
     merge_vertices: bool = False,

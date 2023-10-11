@@ -1,13 +1,11 @@
 from typing import Callable, Optional, Sequence, TypeVar, Union
 
-import bpy
 import mathutils
+from bpy.types import Context, Operator, PropertyGroup
 
 __PointerPropertyTarget = TypeVar("__PointerPropertyTarget", bound=type)
 __CollectionPropertyElement = TypeVar("__CollectionPropertyElement", bound=type)
-__CallbackSelf = TypeVar(
-    "__CallbackSelf", bound=Union[bpy.types.PropertyGroup, bpy.types.Operator]
-)
+__CallbackSelf = TypeVar("__CallbackSelf", bound=Union[PropertyGroup, Operator])
 
 def BoolProperty(
     name: str = "",
@@ -17,7 +15,7 @@ def BoolProperty(
     override: set[str] = ...,
     tags: set[str] = ...,  # TODO: 型がわからない
     subtype: str = "NONE",
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], bool]] = None,
     set: Optional[Callable[[__CallbackSelf, bool], None]] = None,
 ) -> bool: ...
@@ -39,7 +37,7 @@ def EnumProperty(
     options: set[str] = ...,
     override: set[str] = ...,
     tags: set[str] = ...,
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], int]] = None,
     set: Optional[Callable[[__CallbackSelf, int], None]] = None,
 ) -> str: ...
@@ -58,7 +56,7 @@ def FloatProperty(
     tags: set[str] = ...,
     subtype: str = "NONE",
     unit: str = "NONE",
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], float]] = None,
     set: Optional[Callable[[__CallbackSelf, float], None]] = None,
 ) -> float: ...
@@ -78,7 +76,7 @@ def FloatVectorProperty(
     subtype: str = "NONE",
     unit: str = "NONE",
     size: int = 3,
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], tuple[float, ...]]] = None,
     set: Optional[Callable[[__CallbackSelf, Sequence[float]], None]] = None,
 ) -> mathutils.Vector: ...  # TODO: たしかVectorが返ったけど自信がない
@@ -95,7 +93,7 @@ def IntProperty(
     override: set[str] = ...,
     tags: set[str] = ...,
     subtype: str = "NONE",
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], int]] = None,
     set: Optional[Callable[[__CallbackSelf, int], None]] = None,
 ) -> int: ...
@@ -107,7 +105,7 @@ def PointerProperty(
     override: set[str] = ...,
     tags: set[str] = ...,  # TODO: 型がわからない
     poll: Optional[Callable[[__CallbackSelf, object], bool]] = None,
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
 ) -> __PointerPropertyTarget: ...
 def StringProperty(
     name: str = "",
@@ -118,7 +116,7 @@ def StringProperty(
     override: set[str] = ...,
     tags: set[str] = ...,  # TODO: 型がわからない
     subtype: str = "NONE",
-    update: Optional[Callable[[__CallbackSelf, bpy.types.Context], None]] = None,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], str]] = None,
     set: Optional[Callable[[__CallbackSelf, str], None]] = None,
 ) -> str: ...

@@ -1435,7 +1435,7 @@ class Modifier(bpy_struct):
     def __setitem__(self, key: str, value: object) -> None: ...
 
 class ArmatureModifier(Modifier):
-    object: Optional[bpy.types.Object]
+    object: Optional[Object]
 
 class NodesModifier(Modifier):
     node_group: Optional[NodeTree]  # Noneになるかは要検証

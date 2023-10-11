@@ -1,3 +1,3 @@
 # pyright: reportUnusedImport=false
 
-from . import types  # noqa: F401
+from idprop import types  # noqa: F401

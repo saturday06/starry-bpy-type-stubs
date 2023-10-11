@@ -1,3 +1,3 @@
 # pyright: reportUnusedImport=false
 
-from . import io_utils
+from bpy_extras import io_utils

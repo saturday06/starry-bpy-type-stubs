@@ -1,12 +1,12 @@
-import bpy
+from bpy.types import Context, Event
 
 class ImportHelper:
     filepath: str  # ドキュメントには記載がない
 
     def invoke(
         self,
-        context: bpy.types.Context,
-        event: bpy.types.Event,
+        context: Context,
+        event: Event,
     ) -> set[str]: ...
 
 class ExportHelper:
@@ -14,6 +14,6 @@ class ExportHelper:
 
     def invoke(
         self,
-        context: bpy.types.Context,
-        event: bpy.types.Event,
+        context: Context,
+        event: Event,
     ) -> set[str]: ...

@@ -1,3 +1,3 @@
 # pyright: reportUnusedImport=false
 
-from . import view
+from bpy.context.preferences import view

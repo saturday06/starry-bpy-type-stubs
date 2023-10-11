@@ -1,3 +1,3 @@
 # pyright: reportUnusedImport=false
 
-from . import preferences
+from bpy.context import preferences
