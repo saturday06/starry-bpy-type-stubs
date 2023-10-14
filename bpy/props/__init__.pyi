@@ -8,6 +8,7 @@ __CollectionPropertyElement = TypeVar("__CollectionPropertyElement", bound=type)
 __CallbackSelf = TypeVar("__CallbackSelf", bound=Union[PropertyGroup, Operator])
 
 def BoolProperty(
+    *,
     name: str = "",
     description: str = "",
     default: bool = False,
@@ -20,6 +21,7 @@ def BoolProperty(
     set: Optional[Callable[[__CallbackSelf, bool], None]] = None,
 ) -> bool: ...
 def CollectionProperty(
+    *,
     type: __CollectionPropertyElement,
     name: str = "",
     description: str = "",
@@ -28,6 +30,7 @@ def CollectionProperty(
     tags: set[str] = ...,
 ) -> __CollectionPropertyElement: ...
 def EnumProperty(
+    *,
     items: Union[
         Sequence[tuple[str, str, str, int]], Sequence[tuple[str, str, str, str, int]]
     ],
@@ -42,6 +45,7 @@ def EnumProperty(
     set: Optional[Callable[[__CallbackSelf, int], None]] = None,
 ) -> str: ...
 def FloatProperty(
+    *,
     name: str = "",
     description: str = "",
     default: float = 0.0,
@@ -61,6 +65,7 @@ def FloatProperty(
     set: Optional[Callable[[__CallbackSelf, float], None]] = None,
 ) -> float: ...
 def FloatVectorProperty(
+    *,
     name: str = "",
     description: str = "",
     default: tuple[float, ...] = (0.0, 0.0, 0.0),
@@ -81,6 +86,7 @@ def FloatVectorProperty(
     set: Optional[Callable[[__CallbackSelf, Sequence[float]], None]] = None,
 ) -> mathutils.Vector: ...  # TODO: たしかVectorが返ったけど自信がない
 def IntProperty(
+    *,
     name: str = "",
     description: str = "",
     default: int = 0,
@@ -98,6 +104,7 @@ def IntProperty(
     set: Optional[Callable[[__CallbackSelf, int], None]] = None,
 ) -> int: ...
 def PointerProperty(
+    *,
     type: __PointerPropertyTarget,
     name: str = "",
     description: str = "",
@@ -108,6 +115,7 @@ def PointerProperty(
     update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
 ) -> __PointerPropertyTarget: ...
 def StringProperty(
+    *,
     name: str = "",
     description: str = "",
     default: str = "",
