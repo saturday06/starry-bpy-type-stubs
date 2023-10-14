@@ -1,3 +1,3 @@
 # pyright: reportUnusedImport=false
 
-from gpu import types
+from . import types

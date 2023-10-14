@@ -1,6 +1,6 @@
 # pyright: reportUnusedImport=false
 
-from bpy.ops import (
+from . import (
     export_scene,
     icyp,
     import_scene,
