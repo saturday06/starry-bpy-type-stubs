@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 from typing import Callable, Optional
 
 def register(

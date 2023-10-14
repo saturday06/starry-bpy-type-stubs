@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument,redefined-builtin
+
 from typing import Callable, Optional, Sequence, TypeVar, Union
 
 import mathutils

@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument,redefined-builtin
+
 from gpu.types import GPUBatch, GPUShader
 
 def batch_for_shader(

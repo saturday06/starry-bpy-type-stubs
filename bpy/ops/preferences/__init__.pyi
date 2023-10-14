@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 def addon_install(
     execution_context: str = "EXEC_DEFAULT",
     /,

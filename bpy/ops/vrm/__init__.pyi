@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 def refresh_mtoon1_outline(
     execution_context: str = "EXEC_DEFAULT",
     /,

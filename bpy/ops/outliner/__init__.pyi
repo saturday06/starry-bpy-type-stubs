@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 def orphans_purge(
     execution_context: str = "EXEC_DEFAULT",
     /,

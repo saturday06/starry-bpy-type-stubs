@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument,multiple-statements
+
 from collections.abc import Iterator, Sequence
 from typing import Generic, Optional, TypeVar
 

@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument,redefined-builtin,multiple-statements
+
 import contextlib
 from collections.abc import (
     ItemsView,

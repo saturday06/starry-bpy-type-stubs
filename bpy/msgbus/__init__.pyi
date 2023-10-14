@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 # TODO: 正しい型
 def subscribe_rna(
     key: object,

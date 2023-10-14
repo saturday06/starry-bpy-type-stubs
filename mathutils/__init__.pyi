@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 from collections.abc import Iterable, Iterator, Sequence
 from typing import Optional, Union, overload
 

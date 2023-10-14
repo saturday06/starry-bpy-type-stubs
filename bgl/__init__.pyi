@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 GL_BACK: int
 GL_BLEND: int
 GL_CLAMP_TO_EDGE: int

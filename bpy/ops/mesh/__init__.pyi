@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 def select_all(
     execution_context: str = "EXEC_DEFAULT",
     /,

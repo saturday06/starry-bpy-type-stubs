@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 from bmesh.types import BMesh, BMFaceSeq
 
 def recalc_face_normals(

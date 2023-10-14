@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 from typing import Optional
 
 from bpy.types import OperatorFileListElement, bpy_prop_collection

@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument,redefined-builtin
+
 import contextlib
 from collections.abc import Sequence
 from typing import Optional, Union

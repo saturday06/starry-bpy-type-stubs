@@ -1,3 +1,4 @@
+# pylint: disable=import-self,unused-argument,no-name-in-module
 # pyright: reportUnusedImport=false
 
 from . import ops, types
