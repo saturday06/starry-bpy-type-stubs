@@ -138,7 +138,10 @@ class CollectionProperty(Property):
     def move(self, from_index: int, to_index: int) -> None: ...  # TODO: undocumented
 
 class PropertyGroup(Property):
-    name: str
+    @property
+    def name(self) -> str: ...
+    @name.setter
+    def name(self, value: str) -> None: ...
 
     # TODO: 本当はbpy_structのメソッド
     def get(self, key: str, default: object = None) -> object: ...
