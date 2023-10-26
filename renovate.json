@@ -18,6 +18,16 @@
             "automerge": true
         },
         {
+            "matchManagers": ["github-actions"],
+            "matchUpdateTypes": [
+                "major",
+                "minor",
+                "patch",
+                "digest"
+            ],
+            "automerge": true
+        },
+        {
             "matchPackageNames": [
                 "bpy",
                 "python"
