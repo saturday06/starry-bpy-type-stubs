@@ -137,11 +137,8 @@ class CollectionProperty(Property):
     def values(self) -> ValuesView[Property]: ...  # TODO: undocumented
     def move(self, from_index: int, to_index: int) -> None: ...  # TODO: undocumented
 
-class PropertyGroup(Property):
-    @property
-    def name(self) -> str: ...
-    @name.setter
-    def name(self, value: str) -> None: ...
+class PropertyGroup(bpy_struct):
+    name: str
 
     # TODO: 本当はbpy_structのメソッド
     def get(self, key: str, default: object = None) -> object: ...
