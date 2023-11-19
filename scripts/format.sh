@@ -4,6 +4,6 @@ set -eux
 
 cd "$(dirname "$0")/.."
 
-git ls-files "*.py" "*.pyi" | xargs poetry run isort
-git ls-files "*.py" "*.pyi" | xargs poetry run black
-git ls-files "*.sh" | xargs shfmt --write --simplify
+git ls-files "*.py" "*.pyi" | xargs poetry run ruff --fix
+git ls-files "*.py" "*.pyi" | xargs poetry run ruff format
+git ls-files "*.sh" | xargs shfmt -w -s

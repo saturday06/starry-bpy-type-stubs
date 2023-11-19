@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument,multiple-statements
-
 from collections.abc import Iterator, Sequence
 from typing import Generic, Optional, TypeVar
 
@@ -20,7 +18,9 @@ class BMVert:
     index: int
     co: mathutils.Vector
 
-    def __getitem__(self, value: BMLoopUV) -> mathutils.Vector: ...  # ドキュメントには存在しない
+    def __getitem__(
+        self, value: BMLoopUV
+    ) -> mathutils.Vector: ...  # ドキュメントには存在しない
 
 class BMLayerCollection:
     def __getitem__(self, key: str) -> BMLoopUV: ...  # ドキュメントに記載はない?
@@ -45,17 +45,21 @@ class BMEdge: ...
 class BMEdgeSeq:
     def new(
         self,
-        verts: tuple[BMVert, BMVert],  # 実際にはSequenceだと思うが、2要素チェックをしたいのでtuple
+        verts: tuple[
+            BMVert, BMVert
+        ],  # 実際にはSequenceだと思うが、2要素チェックをしたいのでtuple
         example: Optional[BMEdge] = None,
     ) -> BMEdge: ...
 
 class BMLoop:
     index: int
     @property
-    def face(self) -> "BMFace": ...
+    def face(self) -> BMFace: ...
     @property
     def vert(self) -> BMVert: ...
-    def __getitem__(self, uv: BMLoopUV) -> BMLoopUV: ...  # TODO: ドキュメントに存在しない
+    def __getitem__(
+        self, uv: BMLoopUV
+    ) -> BMLoopUV: ...  # TODO: ドキュメントに存在しない
 
 class BMLoopSeq:
     @property

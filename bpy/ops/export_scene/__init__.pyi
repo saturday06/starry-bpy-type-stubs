@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument
-
 def vrm(
     execution_context: str = "EXEC_DEFAULT",
     /,

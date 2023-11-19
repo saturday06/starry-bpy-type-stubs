@@ -1,6 +1,5 @@
-# pylint: disable=unused-argument,redefined-builtin
-
-from typing import Callable, Optional, Sequence, TypeVar, Union
+from collections.abc import Sequence
+from typing import Callable, Optional, TypeVar, Union
 
 import mathutils
 from bpy.types import Context, Operator, PropertyGroup
@@ -38,7 +37,9 @@ def EnumProperty(
     ],
     name: str = "",
     description: str = "",
-    default: Optional[Union[str, int]] = None,  # setも受け取れるらしいが仕様が読み取れなかった
+    default: Optional[
+        Union[str, int]
+    ] = None,  # setも受け取れるらしいが仕様が読み取れなかった
     options: set[str] = ...,
     override: set[str] = ...,
     tags: set[str] = ...,

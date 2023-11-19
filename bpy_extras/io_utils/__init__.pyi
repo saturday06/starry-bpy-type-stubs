@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument
-
 from bpy.types import Context, Event
 
 class ImportHelper:

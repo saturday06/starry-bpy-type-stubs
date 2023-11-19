@@ -1,33 +1,46 @@
-# pylint: disable=unused-argument
-
 from typing import Union
 
 from bpy.types import (
     AddonPreferences,
+    Header,
+    KeyingSetInfo,
+    Menu,
     Operator,
     Panel,
-    Preferences,
     PropertyGroup,
+    RenderEngine,
     UIList,
 )
 
 def register_class(
-    t: Union[
-        type[Operator],
-        type[PropertyGroup],
-        type[Panel],
-        type[UIList],
-        type[Preferences],
-        type[AddonPreferences],
-    ]
+    t: type[
+        Union[
+            Panel,
+            UIList,
+            Menu,
+            Header,
+            Operator,
+            KeyingSetInfo,
+            RenderEngine,
+            # 以下、ドキュメントには存在しないもの
+            AddonPreferences,
+            PropertyGroup,
+        ]
+    ],
 ) -> None: ...
 def unregister_class(
-    t: Union[
-        type[Operator],
-        type[PropertyGroup],
-        type[Panel],
-        type[UIList],
-        type[Preferences],
-        type[AddonPreferences],
-    ]
+    t: type[
+        Union[
+            Panel,
+            UIList,
+            Menu,
+            Header,
+            Operator,
+            KeyingSetInfo,
+            RenderEngine,
+            # 以下、ドキュメントには存在しないもの
+            AddonPreferences,
+            PropertyGroup,
+        ]
+    ],
 ) -> None: ...

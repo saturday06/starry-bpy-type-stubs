@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument
-
 def make_basic_armature(
     execution_context: str = "EXEC_DEFAULT",
     /,

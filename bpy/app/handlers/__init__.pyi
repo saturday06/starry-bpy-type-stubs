@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument
-
 from collections.abc import MutableSequence
 from typing import Callable
 

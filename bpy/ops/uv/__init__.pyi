@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument
-
 def smart_project(
     execution_context: str = "EXEC_DEFAULT",
     /,

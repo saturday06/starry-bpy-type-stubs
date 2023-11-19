@@ -1,3 +1,6 @@
+[project]
+requires-python = ">=3.9"
+
 [tool.poetry]
 name = "starry-bpy-type-stubs"
 version = "1.0.0"
@@ -10,21 +13,39 @@ python = "3.10.*"
 bpy = "3.6.*"
 
 [tool.poetry.dev-dependencies]
-black = "*"
-flake8 = "*"
-flake8-bugbear = "*"
-flake8-no-pep420 = "*"
-flake8-scream = "*"
-flake8-simplify = "*"
-flake8-spellcheck = "*"
-isort = "*"
+codespell = "*"
 mypy = "*"
-pep8-naming = "*"
-pylint = "*"
 pyright = "*"
+ruff = "*"
 
-[tool.black]
-target-version = ["py39"]
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A002", # Argument `x` is shadowing a Python builtin
+    "A003", # Class attribute `x` is shadowing a Python builtin
+    "ANN101", # Missing type annotation for `self` in method
+    "ANN102", # Missing type annotation for `cls` in classmethod
+    "ERA001", # Found commented-out code
+    "F401", # `x` imported but unused
+    "FBT001", # Boolean-typed positional argument in function definition
+    "FBT002", # Boolean default positional argument in function definition
+    "FIX002", # Line contains TODO, consider resolving the issue
+    "N801", # Class name `x` should use CapWords convention
+    "N802", # Function name `x` should be lowercase
+    "PLR0913", # Too many arguments in function definition (x > y)
+    "PYI011", # Only simple default values allowed for typed arguments
+    "PYI026", # Use `typing_extensions.TypeAlias` for type alias, e.g., `x: TypeAlias = y`
+    "UP007", # Use `X | Y` for type annotations
+    "TD002", # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+    "TD003", # Missing issue link on the line following this TODO
+
+    # Ruff 0.1.6 may cause conflicts when used with the formatter: `COM812`, `ISC001`.
+    "COM812", # Trailing comma missing
+    "ISC001", # Implicitly concatenated string literals on one line
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
 
 [tool.mypy]
 python_version = "3.9"
@@ -39,32 +60,8 @@ module = [
 ]
 ignore_missing_imports = true
 
-[tool.pylint.main]
-py-version = "3.9"
-
-[tool.pylint.format]
-max-module-lines = 2000
-
-[tool.pylint.design]
-max-args = 50
-max-locals = 50
-min-public-methods = 0
-
-[tool.pylint."messages control"]
-disable = [
-    "fixme",
-    "import-error",
-    "invalid-name",
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "missing-module-docstring",
-    "multiple-statements",
-    "redefined-builtin",
-    "unused-argument",
-]
-
-[tool.pylint.similar]
-min-similarity-lines = 12
+[tool.pylint]
+ignore-paths = "." # Please use Ruff instead.
 
 [tool.pyright]
 pythonVersion = "3.9"

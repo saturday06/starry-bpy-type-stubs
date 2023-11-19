@@ -1,5 +1,3 @@
-# pylint: disable=unused-argument,redefined-builtin
-
 def delete(
     execution_context: str = "EXEC_DEFAULT",
     /,
