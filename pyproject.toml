@@ -60,7 +60,7 @@ module = [
 ]
 ignore_missing_imports = true
 
-[tool.pylint]
+[tool.pylint.main]
 ignore-paths = "." # Please use Ruff instead.
 
 [tool.pyright]
