@@ -106,6 +106,26 @@ def IntProperty(
     get: Optional[Callable[[__CallbackSelf], int]] = None,
     set: Optional[Callable[[__CallbackSelf, int], None]] = None,
 ) -> int: ...
+def IntVectorProperty(
+    *,
+    name: str = "",
+    description: str = "",
+    translation_context: str = "*",
+    default: tuple[int, ...] = (0, 0, 0),
+    min: int = ...,
+    max: int = ...,
+    soft_min: int = ...,
+    soft_max: int = ...,
+    step: int = 1,
+    options: set[str] = ...,
+    override: set[str] = ...,
+    tags: set[str] = ...,
+    subtype: str = "NONE",
+    size: int = ...,
+    update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
+    get: Optional[Callable[[__CallbackSelf], tuple[int, ...]]] = None,
+    set: Optional[Callable[[__CallbackSelf, Sequence[int]], None]] = None,
+) -> mathutils.Vector: ...  # TODO: たしかVectorが返ったけど自信がない
 def PointerProperty(
     *,
     type: __PointerPropertyTarget,
