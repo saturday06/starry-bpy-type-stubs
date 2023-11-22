@@ -22,7 +22,7 @@ jobs:
         run: git config core.quotepath off
       - name: Check file permissions
         run: |
-          git ls-files ':!scripts/*.bat' ':!scripts/*.sh' | while read -r f; do
+          git ls-files ':!tools/*.bat' ':!tools/*.sh' | while read -r f; do
             echo "$f"
             if [ -x "$f" ]; then
               echo "$f has unnecessary executable permission."
@@ -60,10 +60,10 @@ jobs:
         run: poetry install
       - name: Check source code formatting
         run: |
-          ./scripts/format.sh
+          ./tools/format.sh
           git diff --exit-code
       - name: Lint
-        run: ./scripts/lint.sh
+        run: ./tools/lint.sh
       - name: Super-Linter
         uses: github/super-linter@v5
         env:

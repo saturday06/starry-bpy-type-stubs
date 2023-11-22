@@ -12,8 +12,8 @@
 !/dictionary.txt
 !/pyproject.toml
 !/LICENSE
-!/scripts/*.bat
-!/scripts/*.sh
+!/tools/*.bat
+!/tools/*.sh
 /venv/
 /.venv/
 /.vs/
