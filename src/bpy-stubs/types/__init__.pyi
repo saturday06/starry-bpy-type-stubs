@@ -10,6 +10,9 @@ from collections.abc import (
 )
 from typing import Callable, Generic, Optional, TypeVar, Union, overload
 
+import bpy
+import mathutils
+
 # pyright: reportMissingImports=false, reportUnknownVariableType=false
 from io_scene_vrm.editor.extension import (
     VrmAddonArmatureExtensionPropertyGroup,
@@ -18,9 +21,6 @@ from io_scene_vrm.editor.extension import (
     VrmAddonObjectExtensionPropertyGroup,
     VrmAddonSceneExtensionPropertyGroup,
 )
-
-import bpy
-import mathutils
 
 class bpy_struct:
     id_data: Optional[ID]

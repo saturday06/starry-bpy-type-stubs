@@ -7,6 +7,16 @@ version = "1.0.0"
 description = ""
 authors = ["Isamu Mogi <isamu@leafytree.jp>"]
 readme = "README.md"
+packages = [
+    { include = "bgl-stubs", from = "src" },
+    { include = "bmesh-stubs", from = "src" },
+    { include = "bpy-stubs", from = "src" },
+    { include = "bpy_extras-stubs", from = "src" },
+    { include = "gpu-stubs", from = "src" },
+    { include = "gpu_extras-stubs", from = "src" },
+    { include = "idprop-stubs", from = "src" },
+    { include = "mathutils-stubs", from = "src" },
+]
 
 [tool.poetry.dependencies]
 python = "3.10.*"
