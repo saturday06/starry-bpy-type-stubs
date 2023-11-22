@@ -1,3 +1,1 @@
-# pyright: reportUnusedImport=false
-
-from . import view
+from . import view as view

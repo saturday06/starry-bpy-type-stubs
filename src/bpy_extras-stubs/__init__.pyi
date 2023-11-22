@@ -1,3 +1,1 @@
-# pyright: reportUnusedImport=false
-
-from . import io_utils
+from . import io_utils as io_utils

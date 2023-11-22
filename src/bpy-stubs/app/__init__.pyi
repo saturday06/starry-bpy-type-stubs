@@ -1,6 +1,6 @@
-# pyright: reportUnusedImport=false
-
-from . import handlers, timers, translations
+from . import handlers as handlers
+from . import timers as timers
+from . import translations as translations
 
 version_cycle: str
 version: tuple[int, int, int]

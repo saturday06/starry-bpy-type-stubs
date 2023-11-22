@@ -1,3 +1,1 @@
-# pyright: reportUnusedImport=false
-
-from . import preferences
+from . import preferences as preferences
