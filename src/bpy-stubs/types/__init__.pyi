@@ -1420,6 +1420,9 @@ class NodeTreeInterface(bpy_struct):
         parent: Optional[NodeTreeInterfacePanel] = None,
     ) -> NodeTreeInterfaceSocket: ...
     def clear(self) -> None: ...
+    def remove(
+        self, item: NodeTreeInterfaceItem, move_content_to_parent: bool = True
+    ) -> None: ...
 
 class NodeTree(ID):
     @property
