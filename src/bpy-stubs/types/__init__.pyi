@@ -49,7 +49,6 @@ class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
     @overload
     def __getitem__(self, index: slice) -> tuple[__BpyPropCollectionElement, ...]: ...
     def __len__(self) -> int: ...
-    def remove(self, element: __BpyPropCollectionElement) -> None: ...
     def keys(self) -> KeysView[str]: ...
     def values(self) -> ValuesView[__BpyPropCollectionElement]: ...
     def items(self) -> ItemsView[str, __BpyPropCollectionElement]: ...
@@ -657,6 +656,7 @@ class Mesh(ID):
 
 class ArmatureEditBones(bpy_prop_collection[EditBone]):
     def new(self, name: str) -> EditBone: ...
+    def remove(self, bone: EditBone) -> None: ...
 
 class AnimData(bpy_struct):
     action: Optional[Action]  # TODO: 本当にOptionalか確認
@@ -1188,6 +1188,7 @@ class MaterialSlot(bpy_struct):
 
 class ObjectModifiers(bpy_prop_collection["Modifier"]):
     def new(self, name: str, type: str) -> Modifier: ...
+    def remove(self, modifier: Modifier) -> None: ...
     def clear(self) -> None: ...
 
 class VertexGroup(bpy_struct):
@@ -1299,15 +1300,19 @@ class NodeLinks(bpy_prop_collection[NodeLink]):
     def new(
         self, input: NodeSocket, output: NodeSocket, verify_limits: bool = True
     ) -> NodeLink: ...
+    def remove(self, link: NodeLink) -> None: ...
 
 class Nodes(bpy_prop_collection[Node]):
     def new(self, type: str) -> Node: ...
+    def remove(self, node: Node) -> None: ...
 
 class NodeTreeInputs(bpy_prop_collection[NodeSocketInterface]):
     def new(self, type: str, name: str) -> NodeSocketInterface: ...
+    def remove(self, socket: NodeSocketInterface) -> None: ...
 
 class NodeTreeOutputs(bpy_prop_collection[NodeSocketInterface]):
     def new(self, type: str, name: str) -> NodeSocketInterface: ...
+    def remove(self, socket: NodeSocketInterface) -> None: ...
 
 class NodeTreeInterfaceItem(bpy_struct):
     @property
@@ -1623,6 +1628,13 @@ class Collection(ID):
 
 class BlendDataCollections(bpy_prop_collection[Collection]):
     def new(self, name: str) -> Collection: ...
+    def remove(
+        self,
+        collection: Collection,
+        do_unlink: bool = True,
+        do_id_user: bool = True,
+        do_ui_user: bool = True,
+    ) -> None: ...
     active: Optional[Object]
 
 class BlendDataObjects(bpy_prop_collection[Object]):
@@ -1639,6 +1651,13 @@ class Library(ID): ...
 
 class BlendDataMaterials(bpy_prop_collection[Material]):
     def new(self, name: str) -> Material: ...
+    def remove(
+        self,
+        material: Material,
+        do_unlink: bool = True,
+        do_id_user: bool = True,
+        do_ui_user: bool = True,
+    ) -> None: ...
 
 class BlendDataImages(bpy_prop_collection[Image]):
     def new(
@@ -1662,6 +1681,13 @@ class BlendDataTexts(bpy_prop_collection[Text]):
 
 class BlendDataMeshes(bpy_prop_collection[Mesh]):
     def new(self, name: str) -> Mesh: ...
+    def remove(
+        self,
+        mesh: Mesh,
+        do_unlink: bool = True,
+        do_id_user: bool = True,
+        do_ui_user: bool = True,
+    ) -> None: ...
 
 class BlendDataLibraries(bpy_prop_collection[Library]):
     def load(
@@ -1672,6 +1698,13 @@ class BlendDataLibraries(bpy_prop_collection[Library]):
 
 class BlendDataNodeTrees(bpy_prop_collection[NodeTree]):
     def new(self, name: str, type: str) -> NodeTree: ...
+    def remove(
+        self,
+        tree: NodeTree,
+        do_unlink: bool = True,
+        do_id_user: bool = True,
+        do_ui_user: bool = True,
+    ) -> None: ...
     def append(self, value: NodeTree) -> None: ...  # ドキュメントに存在しない
 
 class BlendDataActions(bpy_prop_collection[Action]):
@@ -1697,6 +1730,13 @@ class MetaBall(ID):
 
 class BlendDataMetaBalls(bpy_prop_collection[MetaBall]):
     def new(self, name: str) -> MetaBall: ...
+    def remove(
+        self,
+        metaball: MetaBall,
+        do_unlink: bool = True,
+        do_id_user: bool = True,
+        do_ui_user: bool = True,
+    ) -> None: ...
 
 class BlendData:
     @property
