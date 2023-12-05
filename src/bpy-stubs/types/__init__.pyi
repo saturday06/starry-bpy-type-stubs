@@ -325,7 +325,7 @@ class EditBone(bpy_struct):
     name: str
     @property
     def head(
-        self
+        self,
     ) -> (
         mathutils.Vector
     ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
@@ -333,7 +333,7 @@ class EditBone(bpy_struct):
     def head(self, value: Iterable[float]) -> None: ...
     @property
     def tail(
-        self
+        self,
     ) -> (
         mathutils.Vector
     ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
@@ -367,7 +367,7 @@ class PoseBone(bpy_struct, __CustomProperty):
     def constraints(self) -> PoseBoneConstraints: ...
     @property
     def head(
-        self
+        self,
     ) -> (
         mathutils.Vector
     ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
@@ -1253,7 +1253,7 @@ class Object(ID):
     def vertex_groups(self) -> VertexGroups: ...
     @property
     def location(
-        self
+        self,
     ) -> (
         # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
         mathutils.Vector
