@@ -10,7 +10,6 @@ from collections.abc import (
 )
 from typing import Callable, Generic, Optional, TypeVar, Union, overload
 
-import bpy
 import mathutils
 
 # pyright: reportMissingImports=false, reportUnknownVariableType=false
@@ -29,7 +28,7 @@ class bpy_struct:
         self,
         data_path: str,
         index: int = -1,
-        frame: float = bpy.context.scene.frame_current,
+        frame: float = ...,
         group: str = "",
         options: set[str] = ...,
     ) -> bool: ...
@@ -306,18 +305,8 @@ class Bone(bpy_struct, __CustomProperty):
         self,
         matrix: Iterable[Iterable[float]],
         matrix_local: Iterable[Iterable[float]],
-        parent_matrix: Iterable[Iterable[float]] = (
-            (0.0, 0.0, 0.0, 0.0),
-            (0.0, 0.0, 0.0, 0.0),
-            (0.0, 0.0, 0.0, 0.0),
-            (0.0, 0.0, 0.0, 0.0),
-        ),
-        parent_matrix_local: Iterable[Iterable[float]] = (
-            (0.0, 0.0, 0.0, 0.0),
-            (0.0, 0.0, 0.0, 0.0),
-            (0.0, 0.0, 0.0, 0.0),
-            (0.0, 0.0, 0.0, 0.0),
-        ),
+        parent_matrix: Iterable[Iterable[float]] = ...,
+        parent_matrix_local: Iterable[Iterable[float]] = ...,
         invert: bool = False,
     ) -> mathutils.Matrix: ...
 

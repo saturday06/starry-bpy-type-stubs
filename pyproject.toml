@@ -43,7 +43,6 @@ ignore = [
     "N801", # Class name `x` should use CapWords convention
     "N802", # Function name `x` should be lowercase
     "PLR0913", # Too many arguments in function definition (x > y)
-    "PYI011", # Only simple default values allowed for typed arguments
     "PYI026", # Use `typing_extensions.TypeAlias` for type alias, e.g., `x: TypeAlias = y`
     "UP007", # Use `X | Y` for type annotations
     "TD002", # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
