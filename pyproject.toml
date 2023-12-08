@@ -58,6 +58,7 @@ convention = "pep257"
 
 [tool.mypy]
 python_version = "3.9"
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 strict = true
 disallow_any_decorated = true
 disallow_any_explicit = true
