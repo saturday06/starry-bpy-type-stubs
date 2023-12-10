@@ -7,6 +7,7 @@ def vrm(
     /,
     *,
     filepath: str = "",
+    use_addon_preferences: bool = False,
     extract_textures_into_folder: bool = True,
     make_new_texture_folder: bool = True,
 ) -> set[str]: ...

@@ -3,6 +3,7 @@ def vrm(
     /,
     *,
     filepath: str = "",
+    use_addon_preferences: bool = False,
     ignore_warning: bool = True,
     armature_object_name: str = "",
 ) -> set[str]: ...
