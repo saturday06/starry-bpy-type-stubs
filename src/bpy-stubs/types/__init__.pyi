@@ -359,6 +359,12 @@ class PoseBoneConstraints(bpy_prop_collection["Constraint"]):
 
 class PoseBone(bpy_struct, __CustomProperty):
     name: str
+    bbone_curveinx: float
+    bbone_curveinz: float
+    bbone_curveoutx: float
+    bbone_curveoutz: float
+    custom_shape: Optional[Object]
+
     @property
     def parent(self) -> Optional[PoseBone]: ...
     @property
