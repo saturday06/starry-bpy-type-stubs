@@ -108,6 +108,11 @@ def vrm_license_warning(
     filepath: str,
     extract_textures_into_folder: bool,
     make_new_texture_folder: bool,
+    set_shading_type_to_material_on_import: bool,
+    set_view_transform_to_standard_on_import: bool,
+    set_armature_display_to_wire: bool,
+    set_armature_display_to_show_in_front: bool,
+    set_armature_bone_shape_to_default: bool,
 ) -> set[str]: ...
 def vrm_gltf2_addon_disabled_warning(
     execution_context: str = "EXEC_DEFAULT",
