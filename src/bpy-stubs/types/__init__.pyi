@@ -39,7 +39,9 @@ __BpyPropCollectionElement = TypeVar("__BpyPropCollectionElement")
 
 class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
     def get(
-        self, key: str, default: Optional[__BpyPropCollectionElement] = None
+        self,
+        key: str,
+        default: Optional[__BpyPropCollectionElement] = None,
     ) -> Optional[__BpyPropCollectionElement]: ...
     def __contains__(self, key: str) -> bool: ...
     def __iter__(self) -> Iterator[__BpyPropCollectionElement]: ...
@@ -128,7 +130,8 @@ class CollectionProperty(Property):
     def __getitem__(self, index: int) -> Property: ...  # TODO: undocumented
     @overload
     def __getitem__(
-        self, index: slice
+        self,
+        index: slice,
     ) -> tuple[Property, ...]: ...  # TODO: undocumented
     def remove(self, index: int) -> None: ...  # TODO: undocumented
     def values(self) -> ValuesView[Property]: ...  # TODO: undocumented
@@ -165,7 +168,11 @@ class Gizmo(bpy_struct):
     scale_basis: float
 
     def target_set_prop(
-        self, target: str, data: AnyType, property: str, index: int = -1
+        self,
+        target: str,
+        data: AnyType,
+        property: str,
+        index: int = -1,
     ) -> None: ...
 
     # GIZMO_GT_move_3d
@@ -351,7 +358,11 @@ class EditBone(bpy_struct):
     @property
     def children(self) -> Sequence[EditBone]: ...
     def transform(
-        self, matrix: mathutils.Matrix, *, scale: bool = True, roll: bool = True
+        self,
+        matrix: mathutils.Matrix,
+        *,
+        scale: bool = True,
+        roll: bool = True,
     ) -> None: ...
 
 class PoseBoneConstraints(bpy_prop_collection["Constraint"]):
@@ -642,7 +653,9 @@ class Mesh(ID):
     def transform(self, matrix: mathutils.Matrix, shape_keys: bool = False) -> None: ...
     def calc_normals_split(self) -> None: ...
     def update(
-        self, calc_edges: bool = False, calc_edges_loose: bool = False
+        self,
+        calc_edges: bool = False,
+        calc_edges_loose: bool = False,
     ) -> None: ...
     def from_pydata(
         self,
@@ -652,10 +665,13 @@ class Mesh(ID):
     ) -> None: ...
     def create_normals_split(self) -> None: ...
     def normals_split_custom_set_from_vertices(
-        self, normals: Iterable[Iterable[float]]
+        self,
+        normals: Iterable[Iterable[float]],
     ) -> None: ...
     def validate(
-        self, verbose: bool = False, clean_customdata: bool = True
+        self,
+        verbose: bool = False,
+        clean_customdata: bool = True,
     ) -> bool: ...
 
 class ArmatureEditBones(bpy_prop_collection[EditBone]):
@@ -1180,7 +1196,9 @@ class Pose(bpy_struct):
     bones: bpy_prop_collection[PoseBone]
     @classmethod
     def apply_pose_from_action(
-        cls, action: Action, evaluation_time: float = 0.0
+        cls,
+        action: Action,
+        evaluation_time: float = 0.0,
     ) -> None: ...
 
 class MaterialSlot(bpy_struct):
@@ -1212,7 +1230,9 @@ class Object(ID):
     @property
     def pose(self) -> Pose: ...
     def select_set(
-        self, state: bool, view_layer: Optional[ViewLayer] = None
+        self,
+        state: bool,
+        view_layer: Optional[ViewLayer] = None,
     ) -> None: ...
 
     hide_render: bool
@@ -1302,7 +1322,10 @@ class NodeLink(bpy_struct):
 
 class NodeLinks(bpy_prop_collection[NodeLink]):
     def new(
-        self, input: NodeSocket, output: NodeSocket, verify_limits: bool = True
+        self,
+        input: NodeSocket,
+        output: NodeSocket,
+        verify_limits: bool = True,
     ) -> NodeLink: ...
     def remove(self, link: NodeLink) -> None: ...
 
@@ -1430,7 +1453,9 @@ class NodeTreeInterface(bpy_struct):
     ) -> NodeTreeInterfaceSocket: ...
     def clear(self) -> None: ...
     def remove(
-        self, item: NodeTreeInterfaceItem, move_content_to_parent: bool = True
+        self,
+        item: NodeTreeInterfaceItem,
+        move_content_to_parent: bool = True,
     ) -> None: ...
 
 class NodeTree(ID):
@@ -1588,7 +1613,9 @@ class WindowManager(ID):
     def progress_update(self, value: float) -> None: ...
     def progress_end(self) -> None: ...
     def event_timer_add(
-        self, time_step: float, window: Optional[Window] = None
+        self,
+        time_step: float,
+        window: Optional[Window] = None,
     ) -> Timer: ...
 
 class SpaceFileBrowser(Space):
@@ -1729,7 +1756,9 @@ class BlendDataMeshes(bpy_prop_collection[Mesh]):
 
 class BlendDataLibraries(bpy_prop_collection[Library]):
     def load(
-        self, filepath: str, link: bool
+        self,
+        filepath: str,
+        link: bool,
     ) -> contextlib.AbstractContextManager[
         tuple[BlendData, BlendData]
     ]: ...  # ドキュメントに存在しない

@@ -17,7 +17,10 @@ class GPUVertBuf:
 
 class GPUBatch:
     def __init__(
-        self, type: str, buf: GPUVertBuf, elem: Optional[GPUIndexBuf] = None
+        self,
+        type: str,
+        buf: GPUVertBuf,
+        elem: Optional[GPUIndexBuf] = None,
     ) -> None: ...
 
 class GPUShader:

@@ -5,7 +5,9 @@ from bpy.types import Region, RegionView3D
 from mathutils import Vector
 
 def region_2d_to_vector_3d(
-    region: Region, rv3d: RegionView3D, coord: Sequence[float]
+    region: Region,
+    rv3d: RegionView3D,
+    coord: Sequence[float],
 ) -> Vector: ...
 def region_2d_to_origin_3d(
     region: Region,

@@ -69,7 +69,9 @@ class Vector(Sequence[float]):
     def rotate(self, other: Union[Euler, Quaternion, Matrix]) -> None: ...
     def lerp(self, other: Vector, factor: float) -> Vector: ...
     def angle(
-        self, other: Vector, fallback: Optional[float] = None
+        self,
+        other: Vector,
+        fallback: Optional[float] = None,
     ) -> float: ...  # fallbackの型のドキュメントが曖昧
     @property
     def magnitude(self) -> float: ...
@@ -84,7 +86,9 @@ class Quaternion:
 
     @overload
     def __init__(
-        self, seq: Union[Vector, Iterable[Union[int, float]]], angle: float
+        self,
+        seq: Union[Vector, Iterable[Union[int, float]]],
+        angle: float,
     ) -> None: ...
     @overload
     def __init__(
@@ -102,10 +106,14 @@ class Quaternion:
     @overload
     def __matmul__(self, other: Vector) -> Vector: ...
     def __setitem__(
-        self, index: int, value: float
+        self,
+        index: int,
+        value: float,
     ) -> None: ...  # ドキュメントには存在しない?
     def to_euler(
-        self, order: str = "XYZ", euler_compat: Optional[Euler] = None
+        self,
+        order: str = "XYZ",
+        euler_compat: Optional[Euler] = None,
     ) -> Euler: ...
     def to_axis_angle(self) -> tuple[Vector, float]: ...
     def inverted(self) -> Quaternion: ...
@@ -120,7 +128,9 @@ class Color:
 class Euler:
     def __init__(self, angles: Iterable[float], order: str = "XYZ") -> None: ...
     def __setitem__(
-        self, index: int, value: float
+        self,
+        index: int,
+        value: float,
     ) -> None: ...  # ドキュメントには存在しない?
     def to_quaternion(self) -> Quaternion: ...
     @overload

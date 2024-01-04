@@ -47,10 +47,6 @@ ignore = [
     "UP007", # Use `X | Y` for type annotations
     "TD002", # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
     "TD003", # Missing issue link on the line following this TODO
-
-    # Ruff 0.1.6 may cause conflicts when used with the formatter: `COM812`, `ISC001`.
-    "COM812", # Trailing comma missing
-    "ISC001", # Implicitly concatenated string literals on one line
 ]
 
 [tool.ruff.lint.pydocstyle]
