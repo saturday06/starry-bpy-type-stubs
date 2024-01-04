@@ -33,8 +33,7 @@ def CollectionProperty(
 def EnumProperty(
     *,
     items: Union[
-        Sequence[tuple[str, str, str, int]],
-        Sequence[tuple[str, str, str, str, int]],
+        Sequence[tuple[str, str, str, int]], Sequence[tuple[str, str, str, str, int]]
     ],
     name: str = "",
     description: str = "",

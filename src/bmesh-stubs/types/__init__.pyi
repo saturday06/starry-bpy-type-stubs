@@ -19,8 +19,7 @@ class BMVert:
     co: mathutils.Vector
 
     def __getitem__(
-        self,
-        value: BMLoopUV,
+        self, value: BMLoopUV
     ) -> mathutils.Vector: ...  # ドキュメントには存在しない
 
 class BMLayerCollection:
@@ -47,8 +46,7 @@ class BMEdgeSeq:
     def new(
         self,
         verts: tuple[
-            BMVert,
-            BMVert,
+            BMVert, BMVert
         ],  # 実際にはSequenceだと思うが、2要素チェックをしたいのでtuple
         example: Optional[BMEdge] = None,
     ) -> BMEdge: ...
@@ -60,8 +58,7 @@ class BMLoop:
     @property
     def vert(self) -> BMVert: ...
     def __getitem__(
-        self,
-        uv: BMLoopUV,
+        self, uv: BMLoopUV
     ) -> BMLoopUV: ...  # TODO: ドキュメントに存在しない
 
 class BMLoopSeq:
