@@ -21,7 +21,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "3.10.*" # I actually want to use 3.9, but bpy 3.6.* doesn't allow it.
 
-# https://projects.blender.org/blender/blender/src/tag/v4.0.0/release/pypi/upload-release.py#L29-L33
+# https://github.com/saturday06/starry-bpy-type-stubs/blob/debfc4595ee1aa03d1df80fdad6b32d5542b3a3d/poetry.lock#L10-L13
 bpy = [
     {version = "3.6.*", markers = "platform_system == 'Darwin' and platform_machine == 'arm64'"},
     {version = "3.6.*", markers = "platform_system == 'Darwin' and platform_machine == 'x86_64'"},
