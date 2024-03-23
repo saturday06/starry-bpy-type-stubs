@@ -20,7 +20,14 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "3.10.*" # I actually want to use 3.9, but bpy 3.6.* doesn't allow it.
-bpy = "3.6.*"
+
+# https://projects.blender.org/blender/blender/src/tag/v4.0.0/release/pypi/upload-release.py#L29-L33
+bpy = [
+    {version = "3.6.*", markers = "platform_system == 'Darwin' and platform_machine == 'arm64'"},
+    {version = "3.6.*", markers = "platform_system == 'Darwin' and platform_machine == 'x86_64'"},
+    {version = "3.6.*", markers = "platform_system == 'Linux' and platform_machine == 'x86_64'"},
+    {version = "3.6.*", markers = "platform_system == 'Windows' and platform_machine == 'x86_64'"},
+]
 
 [tool.poetry.dev-dependencies]
 codespell = "*"
