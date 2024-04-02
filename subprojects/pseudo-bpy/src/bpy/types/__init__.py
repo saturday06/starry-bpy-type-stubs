@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import contextlib
 from collections.abc import (
     ItemsView,
@@ -21,8 +23,10 @@ from io_scene_vrm.editor.extension import (
     VrmAddonSceneExtensionPropertyGroup,
 )
 
+
 class bpy_struct:
     id_data: Optional[ID]
+
     def path_from_id(self, property: str = "") -> str: ...
     def keyframe_insert(
         self,
@@ -35,7 +39,9 @@ class bpy_struct:
 
     bl_rna: BlenderRNA  # ドキュメントには存在しない。TODO: read only
 
+
 __BpyPropCollectionElement = TypeVar("__BpyPropCollectionElement")
+
 
 class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
     def get(
@@ -54,8 +60,10 @@ class bpy_prop_collection(Generic[__BpyPropCollectionElement]):
     def values(self) -> ValuesView[__BpyPropCollectionElement]: ...
     def items(self) -> ItemsView[str, __BpyPropCollectionElement]: ...
 
+
 # ドキュメントには存在しない
 __BpyPropArrayElement = TypeVar("__BpyPropArrayElement")
+
 
 class bpy_prop_array(Generic[__BpyPropArrayElement]):
     def __iter__(self) -> Iterator[__BpyPropArrayElement]: ...
@@ -64,6 +72,7 @@ class bpy_prop_array(Generic[__BpyPropArrayElement]):
     @overload
     def __getitem__(self, index: slice) -> tuple[__BpyPropArrayElement, ...]: ...
     def __setitem__(self, index: int, value: __BpyPropArrayElement) -> None: ...
+
 
 # カスタムプロパティ対応クラス。2.93ではID,Bone,PoseBoneのみ
 # https://docs.blender.org/api/2.93/bpy.types.bpy_struct.html#bpy.types.bpy_struct.values
@@ -77,6 +86,7 @@ class __CustomProperty:
     def items(self) -> ItemsView[str, object]: ...
     def pop(self, key: str, default: object = None) -> object: ...
 
+
 class ID(bpy_struct, __CustomProperty):
     name: str
     is_evaluated: bool
@@ -85,37 +95,46 @@ class ID(bpy_struct, __CustomProperty):
 
     def animation_data_create(self) -> Optional[AnimData]: ...
 
+
 class Property(bpy_struct):
     @property
     def name(self) -> str: ...
     @property
     def identifier(self) -> str: ...
 
+
 class PointerProperty(Property):
     @property
     def fixed_type(self) -> type[bpy_struct]: ...  # TODO: ここの正しい定義を調べる
+
 
 class FloatProperty(Property):
     @property
     def is_array(self) -> bool: ...
 
+
 class IntProperty(Property):
     @property
     def is_array(self) -> bool: ...
+
 
 class BoolProperty(Property):
     @property
     def is_array(self) -> bool: ...
 
+
 class EnumPropertyItem(bpy_struct):
     @property
     def identifier(self) -> str: ...
+
 
 class EnumProperty(Property):
     @property
     def enum_items(self) -> bpy_prop_collection[EnumPropertyItem]: ...
 
+
 class StringProperty(Property): ...
+
 
 class CollectionProperty(Property):
     def fixed_type(self) -> type: ...  # TODO: 正しい実装を調べる必要がある
@@ -134,6 +153,7 @@ class CollectionProperty(Property):
     def values(self) -> ValuesView[Property]: ...  # TODO: undocumented
     def move(self, from_index: int, to_index: int) -> None: ...  # TODO: undocumented
 
+
 class PropertyGroup(bpy_struct):
     name: str
 
@@ -148,6 +168,7 @@ class PropertyGroup(bpy_struct):
     # TODO: 多分本当はbpy_structのメソッド
     def pop(self, key: str, default: object = None) -> object: ...
 
+
 class BlenderRNA(bpy_struct):
     @property
     def properties(
@@ -155,6 +176,7 @@ class BlenderRNA(bpy_struct):
     ) -> bpy_prop_collection[
         Property  # TODO: これがbpy.types.Propertyと一致するかは要検証
     ]: ...  # ドキュメントには存在しない。
+
 
 class Gizmo(bpy_struct):
     alpha: float
@@ -176,15 +198,19 @@ class Gizmo(bpy_struct):
     draw_style: str
     draw_options: set[str]
 
+
 class Gizmos(bpy_prop_collection[Gizmo]):
     def new(self, type: str) -> Gizmo: ...
+
 
 class GizmoGroup(bpy_struct):
     @property
     def gizmos(self) -> Gizmos: ...
 
+
 class ColorManagedInputColorspaceSettings(bpy_struct):
     name: str
+
 
 class Event(bpy_struct):
     @property
@@ -196,8 +222,12 @@ class Event(bpy_struct):
     @property
     def mouse_y(self) -> int: ...
 
+
 class ImageUser(bpy_struct): ...
+
+
 class PackedFile(bpy_struct): ...
+
 
 class Image(ID):
     colorspace_settings: ColorManagedInputColorspaceSettings
@@ -213,6 +243,7 @@ class Image(ID):
     is_dirty: bool
     bindcode: int
     source: str
+
     @property
     def packed_file(self) -> Optional[PackedFile]: ...  # Optionalっぽい
     def filepath_from_user(self, image_user: Optional[ImageUser] = None) -> str: ...
@@ -222,11 +253,14 @@ class Image(ID):
     def pack(self, data: str = "", data_len: int = 0) -> None: ...
     def reload(self) -> None: ...
 
+
 class TimelineMarker(bpy_struct):
     name: str
     frame: int
 
+
 class ActionPoseMarkers(bpy_prop_collection[TimelineMarker]): ...
+
 
 class FCurve(bpy_struct):
     mute: bool
@@ -236,7 +270,9 @@ class FCurve(bpy_struct):
 
     def evaluate(self, frame: int) -> float: ...
 
+
 class ActionFCurves(bpy_prop_collection[FCurve]): ...
+
 
 class Action(ID):
     @property
@@ -244,17 +280,22 @@ class Action(ID):
     @property
     def pose_markers(self) -> ActionPoseMarkers: ...
 
+
 class Texture(ID): ...
+
 
 class LayerObjects(bpy_prop_collection["Object"]):
     active: Optional[Object]
+
 
 class Space(bpy_struct):
     @property
     def type(self) -> str: ...
 
+
 class View3DShading(bpy_struct):
     type: str
+
 
 class SpaceView3D(Space):
     @property
@@ -272,8 +313,10 @@ class SpaceView3D(Space):
         region_type: str,
     ) -> None: ...
 
+
 class Depsgraph(bpy_struct):
     def update(self) -> None: ...
+
 
 class ViewLayer(bpy_struct):
     @property
@@ -281,6 +324,7 @@ class ViewLayer(bpy_struct):
     @property
     def depsgraph(self) -> Depsgraph: ...
     def update(self) -> None: ...
+
 
 class Bone(bpy_struct, __CustomProperty):
     name: str
@@ -323,8 +367,10 @@ class Bone(bpy_struct, __CustomProperty):
         invert: bool = False,
     ) -> mathutils.Matrix: ...
 
+
 class EditBone(bpy_struct):
     name: str
+
     @property
     def head(
         self,
@@ -362,8 +408,10 @@ class EditBone(bpy_struct):
         roll: bool = True,
     ) -> None: ...
 
+
 class PoseBoneConstraints(bpy_prop_collection["Constraint"]):
     def new(self, type: str) -> Constraint: ...
+
 
 class PoseBone(bpy_struct, __CustomProperty):
     name: str
@@ -383,12 +431,16 @@ class PoseBone(bpy_struct, __CustomProperty):
     ) -> (
         mathutils.Vector
     ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
+
     rotation_mode: str
     rotation_quaternion: mathutils.Quaternion
+
     @property
     def bone(self) -> Bone: ...
+
     matrix: mathutils.Matrix  # これもドキュメントと異なりMatrix
     matrix_basis: mathutils.Matrix  # これもドキュメントと異なりMatrix
+
     @property
     def children(self) -> Sequence[PoseBone]: ...
     @property
@@ -400,10 +452,13 @@ class PoseBone(bpy_struct, __CustomProperty):
     @scale.setter
     def scale(self, value: Iterable[float]) -> None: ...
 
+
 class ArmatureBones(bpy_prop_collection[Bone]):
     active: Optional[Bone]  # TODO: Noneになるか?
 
+
 class OperatorProperties(bpy_struct): ...
+
 
 class UILayout(bpy_struct):
     def box(self) -> UILayout: ...
@@ -530,25 +585,32 @@ class UILayout(bpy_struct):
     emboss: str
     alert: bool
 
+
 class AddonPreferences(bpy_struct):
     layout: UILayout  # TODO: No documentation
+
 
 class Addon(bpy_struct):
     @property
     def preferences(self) -> AddonPreferences: ...
 
+
 class Addons(bpy_prop_collection[Addon]): ...
+
 
 class MeshUVLoop(bpy_struct):
     uv: mathutils.Vector  # TODO: 正しい方を調べる
+
 
 class MeshUVLoopLayer(bpy_struct):
     name: str
     data: bpy_prop_collection[MeshUVLoop]
     active_render: bool
 
+
 class UVLoopLayers(bpy_prop_collection[MeshUVLoopLayer]):
     def new(self, name: str = "UVMap", do_init: bool = True) -> MeshUVLoopLayer: ...
+
 
 class MeshLoopTriangle(bpy_struct):
     vertices: tuple[int, int, int]
@@ -560,36 +622,50 @@ class MeshLoopTriangle(bpy_struct):
     ]  # TODO: 正しい型を調べる
     loops: tuple[int, int, int]  # TODO: 正しい型を調べる
 
+
 class MeshLoop(bpy_struct):
     tangent: mathutils.Vector  # TODO: 正しい型を調べる
     vertex_index: int
     normal: mathutils.Vector
 
+
 class MeshLoops(bpy_prop_collection[MeshLoop]): ...
+
+
 class MeshLoopTriangles(bpy_prop_collection[MeshLoopTriangle]): ...
+
 
 class VertexGroupElement(bpy_struct):
     weight: float
+
     @property
     def group(self) -> int: ...
+
 
 class MeshVertex(bpy_struct):
     co: tuple[float, float, float]  # Vectorかも?
     normal: mathutils.Vector  # TODO: 正しい型を調べる
+
     @property
     def groups(self) -> bpy_prop_collection[VertexGroupElement]: ...
     @property
     def index(self) -> int: ...
 
+
 class MeshVertices(bpy_prop_collection[MeshVertex]): ...
+
+
 class UnknownType(bpy_struct): ...
+
 
 class ShapeKey(bpy_struct):
     name: str
     value: float
+
     @property
     def data(self) -> bpy_prop_collection[UnknownType]: ...  # TODO: 多分書き漏れ
     def normals_split_get(self) -> Sequence[float]: ...  # TODO: 正しい型
+
 
 class Key(ID):
     @property
@@ -597,24 +673,31 @@ class Key(ID):
     @property
     def reference_key(self) -> ShapeKey: ...
 
+
 class MeshPolygon(bpy_struct):
     material_index: int
     use_smooth: bool
     vertices: tuple[int, int, int]  # TODO: 正しい型を調べる
+
     @property
     def loop_total(self) -> int: ...
 
+
 class MeshPolygons(bpy_prop_collection[MeshPolygon]): ...
+
 
 class MeshLoopColor(bpy_struct):
     color: Sequence[float]  # TODO: 正しい型を調べる
+
 
 class MeshLoopColorLayer(bpy_struct):
     @property
     def data(self) -> bpy_prop_collection[MeshLoopColor]: ...
 
+
 class LoopColors(bpy_prop_collection[MeshLoopColorLayer]):
     def new(self, name: str = "Col", do_init: bool = True) -> MeshLoopColorLayer: ...
+
 
 class Mesh(ID):
     use_auto_smooth: bool
@@ -637,6 +720,7 @@ class Mesh(ID):
     def vertex_colors(self) -> LoopColors: ...
 
     has_custom_normals: bool
+
     def calc_tangents(self, uvmap: str = "") -> None: ...
     def calc_loop_triangles(self) -> None: ...
     def copy(self) -> Mesh: ...  # ID.copy()
@@ -664,12 +748,15 @@ class Mesh(ID):
         clean_customdata: bool = True,
     ) -> bool: ...
 
+
 class ArmatureEditBones(bpy_prop_collection[EditBone]):
     def new(self, name: str) -> EditBone: ...
     def remove(self, bone: EditBone) -> None: ...
 
+
 class AnimData(bpy_struct):
     action: Optional[Action]  # TODO: 本当にOptionalか確認
+
 
 class Armature(ID):
     pose_position: str
@@ -683,18 +770,22 @@ class Armature(ID):
     @property
     def vrm_addon_extension(self) -> VrmAddonArmatureExtensionPropertyGroup: ...
 
+
 class TextLine(bpy_struct):
     body: str
+
 
 class Text(ID):
     @property
     def lines(self) -> bpy_prop_collection[TextLine]: ...
     def write(self, text: str) -> None: ...
 
+
 class NodeSocketInterface(bpy_struct):
     description: str
     name: str
     bl_socket_idname: str
+
     @property
     def identifier(self) -> str: ...
 
@@ -702,82 +793,99 @@ class NodeSocketInterface(bpy_struct):
     attribute_domain: str
     bl_label: str
 
+
 class NodeSocketInterfaceStandard(NodeSocketInterface):
     @property
     def type(self) -> str: ...
+
 
 class NodeSocketInterfaceFloat(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceFloatAngle(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
+
 
 class NodeSocketInterfaceFloatDistance(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceFloatFactor(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
+
 
 class NodeSocketInterfaceFloatPercentage(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceFloatTime(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
+
 
 class NodeSocketInterfaceFloatUnsigned(NodeSocketInterfaceStandard):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceColor(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float, float]  # TODO: これはカラー?
+
 
 class NodeSocketInterfaceVector(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceVectorAcceleration(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
+
 
 class NodeSocketInterfaceVectorDirection(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceVectorEuler(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
+
 
 class NodeSocketInterfaceVectorTranslation(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceVectorVelocity(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
 
+
 class NodeSocketInterfaceVectorXYZ(NodeSocketInterfaceStandard):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
+
 
 class NodeSocket(bpy_struct):
     display_shape: str
@@ -788,78 +896,105 @@ class NodeSocket(bpy_struct):
     name: str
     show_expanded: bool
     type: str
+
     @property
     def links(self) -> list[NodeLink]: ...
     @property
     def node(self) -> Node: ...
 
+
 class NodeSocketStandard(NodeSocket): ...
+
 
 class NodeSocketBool(NodeSocketStandard):
     default_value: bool
 
+
 class NodeSocketFloat(NodeSocketStandard):
     default_value: float
+
 
 class NodeSocketFloatAngle(NodeSocketStandard):
     default_value: float
 
+
 class NodeSocketFloatDistance(NodeSocketStandard):
     default_value: float
+
 
 class NodeSocketFloatFactor(NodeSocketStandard):
     default_value: float
 
+
 class NodeSocketFloatPercentage(NodeSocketStandard):
     default_value: float
+
 
 class NodeSocketFloatTime(NodeSocketStandard):
     default_value: float
 
+
 class NodeSocketFloatUnsigned(NodeSocketStandard):
     default_value: float
+
 
 class NodeSocketInt(NodeSocketStandard):
     default_value: int
 
+
 class NodeSocketIntFactor(NodeSocketStandard):
     default_value: int
+
 
 class NodeSocketIntPercentage(NodeSocketStandard):
     default_value: int
 
+
 class NodeSocketIntUnsigned(NodeSocketStandard):
     default_value: int
+
 
 class NodeSocketString(NodeSocketStandard):
     default_value: str
 
+
 class NodeSocketVector(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
+
 
 class NodeSocketVectorAcceleration(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
 
+
 class NodeSocketVectorDirection(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
+
 
 class NodeSocketVectorEuler(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
 
+
 class NodeSocketVectorTranslation(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
+
 
 class NodeSocketVectorVelocity(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
 
+
 class NodeSocketVectorXYZ(NodeSocketStandard):
     default_value: tuple[float, float, float]  # TODO: Vector?
+
 
 class NodeSocketColor(NodeSocketStandard):
     default_value: tuple[float, float, float, float]  # TODO: Color?
 
+
 class NodeOutputs(bpy_prop_collection[NodeSocket]): ...
+
+
 class NodeInputs(bpy_prop_collection[NodeSocket]): ...
+
 
 class Node(bpy_struct):
     bl_idname: str
@@ -884,54 +1019,73 @@ class Node(bpy_struct):
     # bpy.app.version < (4, 0):
     width_hidden: bool
 
+
 class NodeInternal(Node): ...
+
+
 class ShaderNode(NodeInternal): ...
+
+
 class NodeReroute(NodeInternal): ...
+
 
 class NodeFrame(NodeInternal):
     shrink: bool
     label_size: int
     text: Text
 
+
 class NodeGroup(NodeInternal): ...
+
 
 class NodeGroupOutput(NodeInternal):
     is_active_output: bool
 
+
 class ShaderNodeWireframe(ShaderNode):
     use_pixel_size: bool
 
+
 class ShaderNodeVertexColor(ShaderNode):
     layer_name: str
+
 
 class ShaderNodeVectorTransform(ShaderNode):
     convert_from: str
     convert_to: str
     vector_type: str
 
+
 class ShaderNodeVectorRotate(ShaderNode):
     invert: bool
     rotation_type: str
 
+
 class ShaderNodeVectorMath(ShaderNode):
     operation: str
 
+
 class ShaderNodeVectorDisplacement(ShaderNode):
     space: str
+
 
 class ShaderNodeUVMap(ShaderNode):
     from_instancer: bool
     uv_map: str
 
+
 class ShaderNodeUVAlongStroke(ShaderNode):
     use_tips: bool
+
 
 class ShaderNodeTexWhiteNoise(ShaderNode):
     noise_dimensions: str
 
+
 class ColorRamp(bpy_struct):
     color_mode: str
     elements: object  # TODO: object
+
 
 class ColorMapping(bpy_struct):
     blend_color: tuple[float, float, float]  # TODO: Color?
@@ -943,6 +1097,7 @@ class ColorMapping(bpy_struct):
     saturation: float
     use_color_ramp: bool
 
+
 class ShaderNodeTexWave(ShaderNode):
     bands_direction: str
     color_mapping: ColorMapping
@@ -951,12 +1106,14 @@ class ShaderNodeTexWave(ShaderNode):
     wave_profile: str
     wave_type: str
 
+
 class ShaderNodeTexVoronoi(ShaderNode):
     color_mapping: ColorMapping
     distance: str
     feature: str
     texture_mapping: object  # TODO: 型をつける
     voronoi_dimensions: str
+
 
 class ShaderNodeTexSky(ShaderNode):
     air_density: float
@@ -969,6 +1126,7 @@ class ShaderNodeTexSky(ShaderNode):
     sun_direction: tuple[float, float, float]  # TODO: Vector?
     turbidity: float
 
+
 class ShaderNodeTexPointDensity(ShaderNode):
     interpolation: str
     object: Optional[Object]
@@ -980,15 +1138,19 @@ class ShaderNodeTexPointDensity(ShaderNode):
     vertex_attribute_name: str
     vertex_color_source: str
 
+
 class ShaderNodeTexNoise(ShaderNode):
     noise_dimensions: str
+
 
 class ShaderNodeTexMusgrave(ShaderNode):
     musgrave_dimensions: str
     musgrave_type: str
 
+
 class ShaderNodeTexMagic(ShaderNode):
     turbulence_depth: int
+
 
 class TexMapping(bpy_struct):
     @property
@@ -1005,31 +1167,38 @@ class TexMapping(bpy_struct):
     mapping_y: str
     mapping_z: str
 
+
 class ShaderNodeTexImage(ShaderNode):
     extension: str
     image: Optional[Image]
     interpolation: str
     projection: str
     projection_blend: float
+
     @property
     def texture_mapping(self) -> TexMapping: ...
+
 
 class ShaderNodeTexIES(ShaderNode):
     filepath: str
     ies: Text
     mode: str
 
+
 class ShaderNodeTexGradient(ShaderNode):
     gradient_type: str
+
 
 class ShaderNodeTexEnvironment(ShaderNode):
     image: Optional[Image]
     interpolation: str
     projection: str
 
+
 class ShaderNodeTexCoord(ShaderNode):
     from_instancer: bool
     object: Optional[Object]
+
 
 class ShaderNodeTexBrick(ShaderNode):
     offset: float
@@ -1037,13 +1206,16 @@ class ShaderNodeTexBrick(ShaderNode):
     squash: float
     squash_frequency: int
 
+
 class ShaderNodeTangent(ShaderNode):
     axis: str
     direction_type: str
     uv_map: str
 
+
 class ShaderNodeSubsurfaceScattering(ShaderNode):
     falloff: str
+
 
 class ShaderNodeScript(ShaderNode):
     bytecode: str
@@ -1053,13 +1225,16 @@ class ShaderNodeScript(ShaderNode):
     script: Text
     use_auto_update: bool
 
+
 class ShaderNodeOutputWorld(ShaderNode):
     is_active_output: bool
     target: str
 
+
 class ShaderNodeOutputMaterial(ShaderNode):
     is_active_output: bool
     target: str
+
 
 class ShaderNodeOutputLineStyle(ShaderNode):
     blend_type: str
@@ -1068,89 +1243,114 @@ class ShaderNodeOutputLineStyle(ShaderNode):
     use_alpha: bool
     use_clamp: bool
 
+
 class ShaderNodeOutputLight(ShaderNode):
     is_active_output: str
     target: str
 
+
 class ShaderNodeOutputAOV(ShaderNode):
     name: str
+
 
 class ShaderNodeNormalMap(ShaderNode):
     space: str
     uv_map: str
+
 
 class ShaderNodeMixRGB(ShaderNode):
     blend_type: str
     use_alpha: bool
     use_clamp: bool
 
+
 class ShaderNodeMath(ShaderNode):
     operation: str
     use_clamp: bool
 
+
 class ShaderNodeMapping(ShaderNode):
     vector_type: str
+
 
 class ShaderNodeMapRange(ShaderNode):
     clamp: bool
     interpolation_type: str
 
+
 class ShaderNodeDisplacement(ShaderNode):
     space: str
 
+
 class ShaderNodeCustomGroup(ShaderNode): ...
+
 
 class ShaderNodeClamp(ShaderNode):
     clamp_type: str
 
+
 class ShaderNodeBump(ShaderNode):
     invert: bool
+
 
 class ShaderNodeBsdfToon(ShaderNode):
     component: str
 
+
 class ShaderNodeBsdfRefraction(ShaderNode):
     distribution: str
+
 
 class ShaderNodeBsdfPrincipled(ShaderNode):
     distribution: str
     subsurface_method: str
 
+
 class ShaderNodeBsdfHairPrincipled(ShaderNode):
     parametrization: str
+
 
 class ShaderNodeBsdfHair(ShaderNode):
     component: str
 
+
 class ShaderNodeBsdfGlass(ShaderNode):
     distribution: str
+
 
 class ShaderNodeBsdfAnisotropic(ShaderNode):
     distribution: str
 
+
 class ShaderNodeBevel(ShaderNode):
     samples: int
+
 
 class ShaderNodeAttribute(ShaderNode):
     attribute_name: str
     attribute_type: str
+
 
 class ShaderNodeAmbientOcclusion(ShaderNode):
     inside: bool
     only_local: bool
     samples: int
 
+
 # bpy.app.version < (4, 0):
 class ShaderNodeBsdfGlossy(ShaderNode):
     distribution: str
+
 
 # bpy.app.version >= (3, 3):
 class ShaderNodeCombineColor(ShaderNode):
     mode: str
 
+
 # bpy.app.version >= (3, 3):
 class ShaderNodeSeparateColor(ShaderNode):
     mode: str
+
 
 # bpy.app.version >= (3, 4):
 class ShaderNodeMix(ShaderNode):
@@ -1160,30 +1360,41 @@ class ShaderNodeMix(ShaderNode):
     data_type: str
     factor_mode: str
 
+
 class GeometryNode(NodeInternal): ...
+
 
 class GeometryNodeExtrudeMesh(GeometryNode):
     mode: str
+
 
 class GeometryNodeDeleteGeometry(GeometryNode):
     domain: str
     mode: str
 
+
 class GeometryNodeSeparateGeometry(GeometryNode):
     domain: str
+
 
 # bpy.app.version >= (3, 3):
 class GeometryNodeSwitch(GeometryNode):
     input_type: str
 
+
 class ShaderNodeRGB(ShaderNode): ...
+
+
 class ShaderNodeValue(ShaderNode): ...
+
 
 class ShaderNodeGroup(ShaderNode):
     node_tree: NodeTree
 
+
 class Pose(bpy_struct):
     bones: bpy_prop_collection[PoseBone]
+
     @classmethod
     def apply_pose_from_action(
         cls,
@@ -1191,30 +1402,38 @@ class Pose(bpy_struct):
         evaluation_time: float = 0.0,
     ) -> None: ...
 
+
 class MaterialSlot(bpy_struct):
     @property
     def name(self) -> str: ...
+
     material: Optional[
         Material
     ]  # マテリアル一覧の+を押したまま何も選ばないとNoneになる
+
 
 class ObjectModifiers(bpy_prop_collection["Modifier"]):
     def new(self, name: str, type: str) -> Modifier: ...
     def remove(self, modifier: Modifier) -> None: ...
     def clear(self) -> None: ...
 
+
 class VertexGroup(bpy_struct):
     name: str
+
     def add(self, index: Sequence[int], weight: float, type: str) -> None: ...
+
 
 class VertexGroups(bpy_prop_collection[VertexGroup]):
     def new(self, name: str = "Group") -> VertexGroup: ...
     def clear(self) -> None: ...
 
+
 class Object(ID):
     name: str
     type: str
     data: Optional[ID]  # ドキュメントにはIDと書いてあるがtypeがemptyの場合はNoneになる
+
     @property
     def mode(self) -> str: ...
     @property
@@ -1228,11 +1447,14 @@ class Object(ID):
     hide_render: bool
     hide_select: bool
     hide_viewport: bool
+
     @property
     def material_slots(self) -> bpy_prop_collection[MaterialSlot]: ...
     @property
     def users_collection(self) -> bpy_prop_collection[Collection]: ...
+
     parent: Optional[Object]
+
     def visible_get(
         self,
         view_layer: Optional[ViewLayer] = None,
@@ -1240,6 +1462,7 @@ class Object(ID):
     ) -> bool: ...
     @property
     def constraints(self) -> ObjectConstraints: ...
+
     parent_type: str
     parent_bone: str
     empty_display_size: float
@@ -1293,15 +1516,19 @@ class Object(ID):
     @property
     def children(self) -> Sequence[Object]: ...  # ドキュメントでは型が不明瞭
 
+
 class PreferencesView:
     use_translate_interface: bool
+
 
 class Preferences(bpy_struct):
     view: PreferencesView
     addons: Addons
 
+
 class UIList(bpy_struct):
     layout_type: str
+
 
 class NodeLink(bpy_struct):
     is_valid: bool
@@ -1309,6 +1536,7 @@ class NodeLink(bpy_struct):
     from_socket: NodeSocket
     from_node: Node
     to_node: Node
+
 
 class NodeLinks(bpy_prop_collection[NodeLink]):
     def new(
@@ -1319,21 +1547,26 @@ class NodeLinks(bpy_prop_collection[NodeLink]):
     ) -> NodeLink: ...
     def remove(self, link: NodeLink) -> None: ...
 
+
 class Nodes(bpy_prop_collection[Node]):
     def new(self, type: str) -> Node: ...
     def remove(self, node: Node) -> None: ...
+
 
 class NodeTreeInputs(bpy_prop_collection[NodeSocketInterface]):
     def new(self, type: str, name: str) -> NodeSocketInterface: ...
     def remove(self, socket: NodeSocketInterface) -> None: ...
 
+
 class NodeTreeOutputs(bpy_prop_collection[NodeSocketInterface]):
     def new(self, type: str, name: str) -> NodeSocketInterface: ...
     def remove(self, socket: NodeSocketInterface) -> None: ...
 
+
 class NodeTreeInterfaceItem(bpy_struct):
     @property
     def item_type(self) -> str: ...
+
 
 class NodeTreeInterfaceSocket(NodeTreeInterfaceItem):
     attribute_domain: str
@@ -1343,91 +1576,111 @@ class NodeTreeInterfaceSocket(NodeTreeInterfaceItem):
     force_non_field: bool
     hide_in_modifier: bool
     hide_value: bool
+
     @property
     def identifier(self) -> str: ...
+
     in_out: str
     name: str
     socket_type: str
+
 
 class NodeTreeInterfaceSocketFloat(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketFloatAngle(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
+
 
 class NodeTreeInterfaceSocketFloatDistance(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketFloatFactor(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
+
 
 class NodeTreeInterfaceSocketFloatPercentage(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketFloatTime(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
+
 
 class NodeTreeInterfaceSocketFloatTimeAbsolute(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketFloatUnsigned(NodeTreeInterfaceSocket):
     default_value: float
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketColor(NodeTreeInterfaceSocket):
     default_value: tuple[float, float, float, float]
+
 
 class NodeTreeInterfaceSocketVector(NodeTreeInterfaceSocket):
     default_value: tuple[float, float, float]
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketVectorAcceleration(NodeTreeInterfaceSocket):
     default_value: mathutils.Vector
     max_value: float
     min_value: float
+
 
 class NodeTreeInterfaceSocketVectorDirection(NodeTreeInterfaceSocket):
     default_value: mathutils.Vector
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketVectorEuler(NodeTreeInterfaceSocket):
     default_value: mathutils.Euler
     max_value: float
     min_value: float
+
 
 class NodeTreeInterfaceSocketVectorTranslation(NodeTreeInterfaceSocket):
     default_value: mathutils.Vector
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfaceSocketVectorVelocity(NodeTreeInterfaceSocket):
     default_value: mathutils.Vector
     max_value: float
     min_value: float
+
 
 class NodeTreeInterfaceSocketVectorXYZ(NodeTreeInterfaceSocket):
     default_value: mathutils.Vector
     max_value: float
     min_value: float
 
+
 class NodeTreeInterfacePanel(NodeTreeInterfaceItem): ...
+
 
 class NodeTreeInterface(bpy_struct):
     @property
@@ -1448,6 +1701,7 @@ class NodeTreeInterface(bpy_struct):
         move_content_to_parent: bool = True,
     ) -> None: ...
 
+
 class NodeTree(ID):
     @property
     def links(self) -> NodeLinks: ...
@@ -1463,6 +1717,7 @@ class NodeTree(ID):
     # bpy.app.version >= (4, 0)
     @property
     def interface(self) -> NodeTreeInterface: ...
+
 
 class Material(ID):
     name: str
@@ -1483,12 +1738,15 @@ class Material(ID):
     @property
     def vrm_addon_extension(self) -> VrmAddonMaterialExtensionPropertyGroup: ...
 
+
 class IDMaterials(bpy_prop_collection[Optional[Material]]):
     def append(self, value: Material) -> None: ...  # TODO: ドキュメントには存在しない
+
 
 class Curve(ID):
     @property
     def materials(self) -> IDMaterials: ...
+
 
 class Modifier(bpy_struct):
     name: str
@@ -1505,13 +1763,17 @@ class Modifier(bpy_struct):
     # TODO: 本当はbpy_structのメソッド
     def __setitem__(self, key: str, value: object) -> None: ...
 
+
 class ArmatureModifier(Modifier):
     object: Optional[Object]
+
 
 class NodesModifier(Modifier):
     node_group: Optional[NodeTree]  # Noneになるかは要検証
 
+
 class OperatorFileListElement(PropertyGroup): ...
+
 
 class Constraint(bpy_struct):
     name: str
@@ -1519,14 +1781,17 @@ class Constraint(bpy_struct):
     mute: bool
     influence: float
 
+
 class ObjectConstraints(bpy_prop_collection[Constraint]):
     def new(self, type: str) -> Constraint: ...
+
 
 class DampedTrackConstraint(Constraint):
     head_tail: float
     subtarget: str
     target: Optional[Object]
     track_axis: str
+
 
 class CopyRotationConstraint(Constraint):
     target: Optional[Object]
@@ -1541,18 +1806,23 @@ class CopyRotationConstraint(Constraint):
     target_space: str
     subtarget: str
 
+
 class ViewLayers(bpy_prop_collection[ViewLayer]):
     def update(self) -> None: ...  # TODO: ドキュメントに記載されていない
+
 
 class ColorManagedViewSettings(bpy_struct):
     view_transform: str
 
+
 class View3DCursor(bpy_struct):
     matrix: mathutils.Matrix
+
 
 class RenderSettings(bpy_struct):
     fps: int
     fps_base: float
+
 
 class Scene(ID):
     frame_start: int
@@ -1572,7 +1842,9 @@ class Scene(ID):
     @property
     def vrm_addon_extension(self) -> VrmAddonSceneExtensionPropertyGroup: ...
 
+
 class AreaSpaces(bpy_prop_collection[Space]): ...
+
 
 class Area(bpy_struct):
     @property
@@ -1587,17 +1859,22 @@ class Area(bpy_struct):
     def spaces(self) -> AreaSpaces: ...
     @property
     def regions(self) -> bpy_prop_collection[Region]: ...
+
     type: str
     show_menus: bool
+
 
 class Screen(ID):
     @property
     def areas(self) -> bpy_prop_collection[Area]: ...
 
+
 class Window(bpy_struct):
     screen: Screen
 
+
 class Timer(bpy_struct): ...
+
 
 class WindowManager(ID):
     @property
@@ -1615,10 +1892,13 @@ class WindowManager(ID):
         window: Optional[Window] = None,
     ) -> Timer: ...
 
+
 class SpaceFileBrowser(Space):
     active_operator: Operator
 
+
 class View2D(bpy_struct): ...
+
 
 class Region(bpy_struct):
     def alignment(self) -> str: ...
@@ -1630,6 +1910,7 @@ class Region(bpy_struct):
     def x(self) -> int: ...
     def y(self) -> int: ...
 
+
 class RegionView3D(bpy_struct):
     # ドキュメントには二次元配列と書いてあるので要確認
     perspective_matrix: mathutils.Matrix
@@ -1637,6 +1918,7 @@ class RegionView3D(bpy_struct):
     view_matrix: mathutils.Matrix
     # ドキュメントには二次元配列と書いてあるので要確認
     window_matrix: mathutils.Matrix
+
 
 class Context(bpy_struct):
     def evaluated_depsgraph_get(self) -> Depsgraph: ...
@@ -1677,16 +1959,20 @@ class Context(bpy_struct):
     # Buttons Context or Node Context
     material: Optional[Material]
 
+
 class CollectionObjects(bpy_prop_collection[Object]):
     def link(self, obj: Object) -> None: ...
     def unlink(self, obj: Object) -> None: ...
 
+
 class CollectionChildren(bpy_prop_collection["Collection"]):
     def link(self, child: Collection) -> None: ...
+
 
 class Collection(ID):
     objects: CollectionObjects
     children: CollectionChildren
+
 
 class BlendDataCollections(bpy_prop_collection[Collection]):
     def new(self, name: str) -> Collection: ...
@@ -1697,7 +1983,9 @@ class BlendDataCollections(bpy_prop_collection[Collection]):
         do_id_user: bool = True,
         do_ui_user: bool = True,
     ) -> None: ...
+
     active: Optional[Object]
+
 
 class BlendDataObjects(bpy_prop_collection[Object]):
     def new(self, name: str, object_data: Optional[ID]) -> Object: ...
@@ -1709,7 +1997,9 @@ class BlendDataObjects(bpy_prop_collection[Object]):
         do_ui_user: bool = True,
     ) -> None: ...
 
+
 class Library(ID): ...
+
 
 class BlendDataMaterials(bpy_prop_collection[Material]):
     def new(self, name: str) -> Material: ...
@@ -1720,6 +2010,7 @@ class BlendDataMaterials(bpy_prop_collection[Material]):
         do_id_user: bool = True,
         do_ui_user: bool = True,
     ) -> None: ...
+
 
 class BlendDataImages(bpy_prop_collection[Image]):
     def new(
@@ -1735,11 +2026,14 @@ class BlendDataImages(bpy_prop_collection[Image]):
     ) -> Image: ...
     def load(self, filepath: str, check_existing: bool = False) -> Image: ...
 
+
 class BlendDataArmatures(bpy_prop_collection[Armature]):
     def new(self, name: str) -> Armature: ...
 
+
 class BlendDataTexts(bpy_prop_collection[Text]):
     def new(self, name: str) -> Text: ...
+
 
 class BlendDataMeshes(bpy_prop_collection[Mesh]):
     def new(self, name: str) -> Mesh: ...
@@ -1751,6 +2045,7 @@ class BlendDataMeshes(bpy_prop_collection[Mesh]):
         do_ui_user: bool = True,
     ) -> None: ...
 
+
 class BlendDataLibraries(bpy_prop_collection[Library]):
     def load(
         self,
@@ -1759,6 +2054,7 @@ class BlendDataLibraries(bpy_prop_collection[Library]):
     ) -> contextlib.AbstractContextManager[
         tuple[BlendData, BlendData]
     ]: ...  # ドキュメントに存在しない
+
 
 class BlendDataNodeTrees(bpy_prop_collection[NodeTree]):
     def new(self, name: str, type: str) -> NodeTree: ...
@@ -1771,10 +2067,13 @@ class BlendDataNodeTrees(bpy_prop_collection[NodeTree]):
     ) -> None: ...
     def append(self, value: NodeTree) -> None: ...  # ドキュメントに存在しない
 
+
 class BlendDataActions(bpy_prop_collection[Action]):
     def new(self, name: str) -> Action: ...
 
+
 class BlendDataScenes(bpy_prop_collection[Scene]): ...
+
 
 class MetaElement(bpy_struct):
     co: mathutils.Vector
@@ -1782,8 +2081,10 @@ class MetaElement(bpy_struct):
     radius: float
     rotation: mathutils.Quaternion
 
+
 class MetaBallElements(bpy_prop_collection[MetaElement]):
     def new(self, type: str = "BALL") -> MetaElement: ...
+
 
 class MetaBall(ID):
     threshold: float
@@ -1791,6 +2092,7 @@ class MetaBall(ID):
 
     @property
     def elements(self) -> MetaBallElements: ...
+
 
 class BlendDataMetaBalls(bpy_prop_collection[MetaBall]):
     def new(self, name: str) -> MetaBall: ...
@@ -1801,6 +2103,7 @@ class BlendDataMetaBalls(bpy_prop_collection[MetaBall]):
         do_id_user: bool = True,
         do_ui_user: bool = True,
     ) -> None: ...
+
 
 class BlendData:
     @property
@@ -1832,24 +2135,37 @@ class BlendData:
     @property
     def metaballs(self) -> BlendDataMetaBalls: ...
 
+
 class Operator(bpy_struct):
     bl_idname: str
     bl_label: str
+
     @property
     def layout(self) -> UILayout: ...
+
 
 # この型はUILayout.prop_searchで使うけど、ドキュメントが曖昧なためいまいちな定義になる
 AnyType = Union[ID, BlendData, Operator, PropertyGroup]
 
+
 class Panel(bpy_struct):
     bl_idname: str
+
     @property
     def layout(self) -> UILayout: ...
 
+
 class Menu(bpy_struct): ...
+
+
 class Header(bpy_struct): ...
+
+
 class KeyingSetInfo(bpy_struct): ...
+
+
 class RenderEngine(bpy_struct): ...
+
 
 TOPBAR_MT_file_import: MutableSequence[Callable[[Operator, Context], None]]
 TOPBAR_MT_file_export: MutableSequence[Callable[[Operator, Context], None]]

@@ -8,13 +8,13 @@ poetry check
 for /f "tokens=* usebackq" %%f in (`git ls-files "*.py"`) do ( set py_files=!py_files! %%f )
 for /f "tokens=* usebackq" %%f in (`git ls-files "*.pyi"`) do ( set pyi_files=!pyi_files! %%f )
 echo ### ruff ###
-call poetry run ruff %py_files% %pyi_files%
+call poetry run ruff check %py_files% %pyi_files%
 echo ### codespell ###
 call poetry run codespell %py_files% %pyi_files%
 echo ### mypy ###
 call poetry run mypy --show-error-codes %pyi_files%
 echo ### pyright ###
-call poetry run pyright %py_files% %pyi_files%
+call poetry run pyright %pyi_files%
 popd
 endlocal
 endlocal

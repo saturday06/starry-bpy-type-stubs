@@ -11,6 +11,8 @@
 !/poetry.lock
 !/dictionary.txt
 !/pyproject.toml
+!/subprojects/*/README.md
+!/subprojects/*/pyproject.toml
 !/LICENSE
 !/tools/*.bat
 !/tools/*.sh

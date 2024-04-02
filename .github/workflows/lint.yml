@@ -62,10 +62,21 @@ jobs:
         run: |
           ./tools/format.sh
           git diff --exit-code
+      - name: Check pseudo-bpy
+        run: |
+          ./tools/generate-pseudo-bpy.sh
+          ./tools/format.sh
+          git diff --exit-code
       - name: Lint
         run: ./tools/lint.sh
       - name: Super-Linter
         uses: github/super-linter@v5
         env:
           LOG_LEVEL: NOTICE
+          VALIDATE_JSCPD: false
+          VALIDATE_PYTHON_BLACK: false
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_PYLINT: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

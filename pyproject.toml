@@ -19,21 +19,17 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "3.10.*" # I actually want to use 3.9, but bpy 3.6.* doesn't allow it.
-
-# https://github.com/saturday06/starry-bpy-type-stubs/blob/debfc4595ee1aa03d1df80fdad6b32d5542b3a3d/poetry.lock#L10-L13
-bpy = [
-    {version = "3.6.*", markers = "platform_system == 'Darwin' and platform_machine == 'x86_64'"},
-    {version = "3.6.*", markers = "platform_system == 'Darwin' and platform_machine == 'arm64'"},
-    {version = "3.6.*", markers = "platform_system == 'Linux' and platform_machine == 'x86_64'"},
-    {version = "3.6.*", markers = "platform_system == 'Windows' and platform_machine == 'x86_64'"},
-]
+python = ">=3.9"
 
 [tool.poetry.dev-dependencies]
+bpy = { path = "subprojects/pseudo-bpy" }
 codespell = "*"
 mypy = "*"
 pyright = "*"
 ruff = "*"
+
+[tool.ruff]
+src = ["src"]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -54,6 +50,12 @@ ignore = [
     "UP007", # Use `X | Y` for type annotations
     "TD002", # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
     "TD003", # Missing issue link on the line following this TODO
+
+    # `COM812` may cause conflicts when used with the formatter in Ruff 0.1.6
+    "COM812", # Trailing comma missing
+
+    # `ISC001` may cause conflicts when used with the formatter in Ruff 0.1.6
+    "ISC001", # Implicitly concatenated string literals on one line
 ]
 
 [tool.ruff.lint.pydocstyle]

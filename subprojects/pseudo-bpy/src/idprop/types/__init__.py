@@ -1,0 +1,6 @@
+from __future__ import annotations
+
+
+class IDPropertyGroup:
+    def clear(self) -> None: ...
+    def get(self, key: str, default: object = None) -> object: ...
