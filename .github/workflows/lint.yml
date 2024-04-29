@@ -62,11 +62,6 @@ jobs:
         run: |
           ./tools/format.sh
           git diff --exit-code
-      - name: Check pseudo-bpy
-        run: |
-          ./tools/generate-pseudo-bpy.sh
-          ./tools/format.sh
-          git diff --exit-code
       - name: Lint
         run: ./tools/lint.sh
       - name: Super-Linter

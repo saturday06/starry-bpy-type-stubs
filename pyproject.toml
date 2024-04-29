@@ -22,7 +22,6 @@ packages = [
 python = ">=3.9"
 
 [tool.poetry.dev-dependencies]
-bpy = { path = "subprojects/pseudo-bpy" }
 codespell = "*"
 mypy = "*"
 pyright = "*"
