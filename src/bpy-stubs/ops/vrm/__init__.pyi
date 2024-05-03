@@ -17,7 +17,7 @@ def add_spring_bone1_spring(
     *,
     armature_name: str,
 ) -> set[str]: ...
-def add_spring_bone1_joint(
+def add_spring_bone1_spring_joint(
     execution_context: str = "EXEC_DEFAULT",
     /,
     *,
