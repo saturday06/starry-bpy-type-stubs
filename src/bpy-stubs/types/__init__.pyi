@@ -528,6 +528,7 @@ class UILayout(bpy_struct):
     alignment: str
     scale_x: float
     emboss: str
+    enabled: bool
     alert: bool
 
 class AddonPreferences(bpy_struct):
