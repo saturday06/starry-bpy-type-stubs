@@ -1181,7 +1181,8 @@ class ShaderNodeRGB(ShaderNode): ...
 class ShaderNodeValue(ShaderNode): ...
 
 class ShaderNodeGroup(ShaderNode):
-    node_tree: NodeTree
+    # https://github.com/KhronosGroup/glTF-Blender-IO/issues/1797
+    node_tree: Optional[NodeTree]
 
 class Pose(bpy_struct):
     bones: bpy_prop_collection[PoseBone]
