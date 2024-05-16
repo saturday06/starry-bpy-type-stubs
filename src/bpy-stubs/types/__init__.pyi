@@ -879,7 +879,6 @@ class Node(bpy_struct):
     width_hidden: bool
 
 class NodeInternal(Node): ...
-class ShaderNode(NodeInternal): ...
 class NodeReroute(NodeInternal): ...
 
 class NodeFrame(NodeInternal):
@@ -891,37 +890,6 @@ class NodeGroup(NodeInternal): ...
 
 class NodeGroupOutput(NodeInternal):
     is_active_output: bool
-
-class ShaderNodeWireframe(ShaderNode):
-    use_pixel_size: bool
-
-class ShaderNodeVertexColor(ShaderNode):
-    layer_name: str
-
-class ShaderNodeVectorTransform(ShaderNode):
-    convert_from: str
-    convert_to: str
-    vector_type: str
-
-class ShaderNodeVectorRotate(ShaderNode):
-    invert: bool
-    rotation_type: str
-
-class ShaderNodeVectorMath(ShaderNode):
-    operation: str
-
-class ShaderNodeVectorDisplacement(ShaderNode):
-    space: str
-
-class ShaderNodeUVMap(ShaderNode):
-    from_instancer: bool
-    uv_map: str
-
-class ShaderNodeUVAlongStroke(ShaderNode):
-    use_tips: bool
-
-class ShaderNodeTexWhiteNoise(ShaderNode):
-    noise_dimensions: str
 
 class ColorRamp(bpy_struct):
     color_mode: str
@@ -936,53 +904,6 @@ class ColorMapping(bpy_struct):
     contrast: float
     saturation: float
     use_color_ramp: bool
-
-class ShaderNodeTexWave(ShaderNode):
-    bands_direction: str
-    color_mapping: ColorMapping
-    rings_direction: str
-    texture_mapping: object  # TODO: 型をつける
-    wave_profile: str
-    wave_type: str
-
-class ShaderNodeTexVoronoi(ShaderNode):
-    color_mapping: ColorMapping
-    distance: str
-    feature: str
-    texture_mapping: object  # TODO: 型をつける
-    voronoi_dimensions: str
-
-class ShaderNodeTexSky(ShaderNode):
-    air_density: float
-    altitude: float
-    color_mapping: ColorMapping
-    dust_density: float
-    ground_albedo: float
-    ozone_density: float
-    sky_type: str
-    sun_direction: tuple[float, float, float]  # TODO: Vector?
-    turbidity: float
-
-class ShaderNodeTexPointDensity(ShaderNode):
-    interpolation: str
-    object: Optional[Object]
-    particle_color_source: str
-    point_source: str
-    radius: float
-    resolution: int
-    space: str
-    vertex_attribute_name: str
-    vertex_color_source: str
-
-class ShaderNodeTexNoise(ShaderNode):
-    noise_dimensions: str
-
-class ShaderNodeTexMusgrave(ShaderNode):
-    musgrave_dimensions: str
-    musgrave_type: str
-
-class ShaderNodeTexMagic(ShaderNode):
-    turbulence_depth: int
 
 class TexMapping(bpy_struct):
     @property
@@ -999,60 +920,130 @@ class TexMapping(bpy_struct):
     mapping_y: str
     mapping_z: str
 
-class ShaderNodeTexImage(ShaderNode):
-    extension: str
-    image: Optional[Image]
-    interpolation: str
-    projection: str
-    projection_blend: float
-    @property
-    def texture_mapping(self) -> TexMapping: ...
+class ShaderNode(NodeInternal): ...  # x
+class ShaderNodeAddShader(ShaderNode): ...  # x
 
-class ShaderNodeTexIES(ShaderNode):
-    filepath: str
-    ies: Text
+class ShaderNodeAmbientOcclusion(ShaderNode):
+    inside: bool
+    only_local: bool
+    samples: int
+
+class ShaderNodeAttribute(ShaderNode):
+    attribute_name: str
+    attribute_type: str
+
+class ShaderNodeBackground(ShaderNode): ...
+
+class ShaderNodeBevel(ShaderNode):
+    samples: int
+
+class ShaderNodeBlackbody(ShaderNode): ...
+class ShaderNodeBrightContrast(ShaderNode): ...
+
+class ShaderNodeBsdfAnisotropic(ShaderNode):
+    distribution: str
+
+class ShaderNodeBsdfDiffuse(ShaderNode): ...
+
+class ShaderNodeBsdfGlass(ShaderNode):
+    distribution: str
+
+class ShaderNodeBsdfGlossy(ShaderNode):  # bpy.app.version < (4, 0):
+    distribution: str
+
+class ShaderNodeBsdfHair(ShaderNode):
+    component: str
+
+class ShaderNodeBsdfHairPrincipled(ShaderNode):
+    parametrization: str
+
+class ShaderNodeBsdfPrincipled(ShaderNode):
+    distribution: str
+    subsurface_method: str
+
+class ShaderNodeBsdfRefraction(ShaderNode):
+    distribution: str
+
+class ShaderNodeBsdfToon(ShaderNode):
+    component: str
+
+class ShaderNodeBsdfTranslucent(ShaderNode): ...
+class ShaderNodeBsdfTransparent(ShaderNode): ...
+class ShaderNodeBsdfVelvet(ShaderNode): ...
+
+class ShaderNodeBump(ShaderNode):
+    invert: bool
+
+class ShaderNodeCameraData(ShaderNode): ...
+
+class ShaderNodeClamp(ShaderNode):
+    clamp_type: str
+
+class ShaderNodeCombineColor(ShaderNode):  # bpy.app.version >= (3, 3):
     mode: str
 
-class ShaderNodeTexGradient(ShaderNode):
-    gradient_type: str
+class ShaderNodeCombineHSV(ShaderNode): ...
+class ShaderNodeCombineRGB(ShaderNode): ...
+class ShaderNodeCombineXYZ(ShaderNode): ...
 
-class ShaderNodeTexEnvironment(ShaderNode):
-    image: Optional[Image]
-    interpolation: str
-    projection: str
+class ShaderNodeDisplacement(ShaderNode):
+    space: str
 
-class ShaderNodeTexCoord(ShaderNode):
-    from_instancer: bool
-    object: Optional[Object]
+class ShaderNodeEeveeSpecular(ShaderNode): ...
+class ShaderNodeEmission(ShaderNode): ...
+class ShaderNodeFresnel(ShaderNode): ...
+class ShaderNodeGamma(ShaderNode): ...
 
-class ShaderNodeTexBrick(ShaderNode):
-    offset: float
-    offset_frequency: int
-    squash: float
-    squash_frequency: int
+class ShaderNodeGroup(ShaderNode):
+    # https://github.com/KhronosGroup/glTF-Blender-IO/issues/1797
+    node_tree: Optional[NodeTree]
 
-class ShaderNodeTangent(ShaderNode):
-    axis: str
-    direction_type: str
+class ShaderNodeHairInfo(ShaderNode): ...
+class ShaderNodeHoldout(ShaderNode): ...
+class ShaderNodeHueSaturation(ShaderNode): ...
+class ShaderNodeInvert(ShaderNode): ...
+class ShaderNodeLayerWeight(ShaderNode): ...
+class ShaderNodeLightFalloff(ShaderNode): ...
+class ShaderNodeLightPath(ShaderNode): ...
+
+class ShaderNodeMapRange(ShaderNode):
+    clamp: bool
+    interpolation_type: str
+
+class ShaderNodeMapping(ShaderNode):
+    vector_type: str
+
+class ShaderNodeMath(ShaderNode):
+    operation: str
+    use_clamp: bool
+
+class ShaderNodeMix(ShaderNode):  # bpy.app.version >= (3, 4):
+    blend_type: str
+    clamp_factor: bool
+    clamp_result: bool
+    data_type: str
+    factor_mode: str
+
+class ShaderNodeMixRGB(ShaderNode):
+    blend_type: str
+    use_alpha: bool
+    use_clamp: bool
+
+class ShaderNodeMixShader(ShaderNode): ...
+class ShaderNodeNewGeometry(ShaderNode): ...
+class ShaderNodeNormal(ShaderNode): ...
+
+class ShaderNodeNormalMap(ShaderNode):
+    space: str
     uv_map: str
 
-class ShaderNodeSubsurfaceScattering(ShaderNode):
-    falloff: str
+class ShaderNodeObjectInfo(ShaderNode): ...
 
-class ShaderNodeScript(ShaderNode):
-    bytecode: str
-    bytecode_hash: str
-    filepath: str
-    mode: str
-    script: Text
-    use_auto_update: bool
+class ShaderNodeOutputAOV(ShaderNode):
+    name: str
 
-class ShaderNodeOutputWorld(ShaderNode):
-    is_active_output: bool
-    target: str
-
-class ShaderNodeOutputMaterial(ShaderNode):
-    is_active_output: bool
+class ShaderNodeOutputLight(ShaderNode):
+    is_active_output: str
     target: str
 
 class ShaderNodeOutputLineStyle(ShaderNode):
@@ -1062,97 +1053,167 @@ class ShaderNodeOutputLineStyle(ShaderNode):
     use_alpha: bool
     use_clamp: bool
 
-class ShaderNodeOutputLight(ShaderNode):
-    is_active_output: str
+class ShaderNodeOutputMaterial(ShaderNode):
+    is_active_output: bool
     target: str
 
-class ShaderNodeOutputAOV(ShaderNode):
-    name: str
+class ShaderNodeOutputWorld(ShaderNode):
+    is_active_output: bool
+    target: str
 
-class ShaderNodeNormalMap(ShaderNode):
-    space: str
+class ShaderNodeParticleInfo(ShaderNode): ...
+class ShaderNodeRGB(ShaderNode): ...
+class ShaderNodeRGBCurve(ShaderNode): ...
+class ShaderNodeRGBToBW(ShaderNode): ...
+
+class ShaderNodeScript(ShaderNode):
+    bytecode: str
+    bytecode_hash: str
+    filepath: str
+    mode: str
+    script: Text
+    use_auto_update: bool
+
+class ShaderNodeSeparateColor(ShaderNode):  # bpy.app.version >= (3, 3):
+    mode: str
+
+class ShaderNodeSeparateHSV(ShaderNode): ...
+class ShaderNodeSeparateRGB(ShaderNode): ...
+class ShaderNodeSeparateXYZ(ShaderNode): ...
+class ShaderNodeShaderToRGB(ShaderNode): ...
+class ShaderNodeSqueeze(ShaderNode): ...
+
+class ShaderNodeSubsurfaceScattering(ShaderNode):
+    falloff: str
+
+class ShaderNodeTangent(ShaderNode):
+    axis: str
+    direction_type: str
     uv_map: str
 
-class ShaderNodeMixRGB(ShaderNode):
-    blend_type: str
-    use_alpha: bool
-    use_clamp: bool
+class ShaderNodeTexBrick(ShaderNode):
+    offset: float
+    offset_frequency: int
+    squash: float
+    squash_frequency: int
 
-class ShaderNodeMath(ShaderNode):
-    operation: str
-    use_clamp: bool
+class ShaderNodeTexChecker(ShaderNode): ...
 
-class ShaderNodeMapping(ShaderNode):
-    vector_type: str
+class ShaderNodeTexCoord(ShaderNode):
+    from_instancer: bool
+    object: Optional[Object]
 
-class ShaderNodeMapRange(ShaderNode):
-    clamp: bool
-    interpolation_type: str
+class ShaderNodeTexEnvironment(ShaderNode):
+    image: Optional[Image]
+    interpolation: str
+    projection: str
 
-class ShaderNodeDisplacement(ShaderNode):
+class ShaderNodeTexGradient(ShaderNode):
+    gradient_type: str
+
+class ShaderNodeTexIES(ShaderNode):
+    filepath: str
+    ies: Text
+    mode: str
+
+class ShaderNodeTexImage(ShaderNode):
+    extension: str
+    image: Optional[Image]
+    interpolation: str
+    projection: str
+    projection_blend: float
+    @property
+    def texture_mapping(self) -> TexMapping: ...
+
+class ShaderNodeTexMagic(ShaderNode):
+    turbulence_depth: int
+
+class ShaderNodeTexMusgrave(ShaderNode):
+    musgrave_dimensions: str
+    musgrave_type: str
+
+class ShaderNodeTexNoise(ShaderNode):
+    noise_dimensions: str
+
+class ShaderNodeTexPointDensity(ShaderNode):
+    interpolation: str
+    object: Optional[Object]
+    particle_color_source: str
+    point_source: str
+    radius: float
+    resolution: int
+    space: str
+    vertex_attribute_name: str
+    vertex_color_source: str
+
+class ShaderNodeTexSky(ShaderNode):
+    air_density: float
+    altitude: float
+    color_mapping: ColorMapping
+    dust_density: float
+    ground_albedo: float
+    ozone_density: float
+    sky_type: str
+    sun_direction: tuple[float, float, float]  # TODO: Vector?
+    turbidity: float
+
+class ShaderNodeTexVoronoi(ShaderNode):
+    color_mapping: ColorMapping
+    distance: str
+    feature: str
+    texture_mapping: object  # TODO: 型をつける
+    voronoi_dimensions: str
+
+class ShaderNodeTexWave(ShaderNode):
+    bands_direction: str
+    color_mapping: ColorMapping
+    rings_direction: str
+    texture_mapping: object  # TODO: 型をつける
+    wave_profile: str
+    wave_type: str
+
+class ShaderNodeTexWhiteNoise(ShaderNode):
+    noise_dimensions: str
+
+class ShaderNodeTree(NodeTree): ...
+
+class ShaderNodeUVAlongStroke(ShaderNode):
+    use_tips: bool
+
+class ShaderNodeUVMap(ShaderNode):
+    from_instancer: bool
+    uv_map: str
+
+class ShaderNodeValToRGB(ShaderNode): ...
+class ShaderNodeValue(ShaderNode): ...
+class ShaderNodeVectorCurve(ShaderNode): ...
+
+class ShaderNodeVectorDisplacement(ShaderNode):
     space: str
 
-class ShaderNodeCustomGroup(ShaderNode): ...
+class ShaderNodeVectorMath(ShaderNode):
+    operation: str
 
-class ShaderNodeClamp(ShaderNode):
-    clamp_type: str
-
-class ShaderNodeBump(ShaderNode):
+class ShaderNodeVectorRotate(ShaderNode):
     invert: bool
+    rotation_type: str
 
-class ShaderNodeBsdfToon(ShaderNode):
-    component: str
+class ShaderNodeVectorTransform(ShaderNode):
+    convert_from: str
+    convert_to: str
+    vector_type: str
 
-class ShaderNodeBsdfRefraction(ShaderNode):
-    distribution: str
+class ShaderNodeVertexColor(ShaderNode):
+    layer_name: str
 
-class ShaderNodeBsdfPrincipled(ShaderNode):
-    distribution: str
-    subsurface_method: str
+class ShaderNodeVolumeAbsorption(ShaderNode): ...
+class ShaderNodeVolumeInfo(ShaderNode): ...
+class ShaderNodeVolumePrincipled(ShaderNode): ...
+class ShaderNodeVolumeScatter(ShaderNode): ...
+class ShaderNodeWavelength(ShaderNode): ...
 
-class ShaderNodeBsdfHairPrincipled(ShaderNode):
-    parametrization: str
-
-class ShaderNodeBsdfHair(ShaderNode):
-    component: str
-
-class ShaderNodeBsdfGlass(ShaderNode):
-    distribution: str
-
-class ShaderNodeBsdfAnisotropic(ShaderNode):
-    distribution: str
-
-class ShaderNodeBevel(ShaderNode):
-    samples: int
-
-class ShaderNodeAttribute(ShaderNode):
-    attribute_name: str
-    attribute_type: str
-
-class ShaderNodeAmbientOcclusion(ShaderNode):
-    inside: bool
-    only_local: bool
-    samples: int
-
-# bpy.app.version < (4, 0):
-class ShaderNodeBsdfGlossy(ShaderNode):
-    distribution: str
-
-# bpy.app.version >= (3, 3):
-class ShaderNodeCombineColor(ShaderNode):
-    mode: str
-
-# bpy.app.version >= (3, 3):
-class ShaderNodeSeparateColor(ShaderNode):
-    mode: str
-
-# bpy.app.version >= (3, 4):
-class ShaderNodeMix(ShaderNode):
-    blend_type: str
-    clamp_factor: bool
-    clamp_result: bool
-    data_type: str
-    factor_mode: str
+class ShaderNodeWireframe(ShaderNode):
+    use_pixel_size: bool
 
 class GeometryNode(NodeInternal): ...
 
@@ -1169,13 +1230,6 @@ class GeometryNodeSeparateGeometry(GeometryNode):
 # bpy.app.version >= (3, 3):
 class GeometryNodeSwitch(GeometryNode):
     input_type: str
-
-class ShaderNodeRGB(ShaderNode): ...
-class ShaderNodeValue(ShaderNode): ...
-
-class ShaderNodeGroup(ShaderNode):
-    # https://github.com/KhronosGroup/glTF-Blender-IO/issues/1797
-    node_tree: Optional[NodeTree]
 
 class Pose(bpy_struct):
     bones: bpy_prop_collection[PoseBone]
