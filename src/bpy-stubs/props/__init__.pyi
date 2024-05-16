@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 from typing import Callable, Optional, TypeVar, Union
 
-import mathutils
 from bpy.types import Context, Operator, PropertyGroup
+from mathutils import Vector
 
 __PointerPropertyTarget = TypeVar("__PointerPropertyTarget", bound=type)
 __CollectionPropertyElement = TypeVar("__CollectionPropertyElement", bound=type)
@@ -88,7 +88,7 @@ def FloatVectorProperty(
     update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], tuple[float, ...]]] = None,
     set: Optional[Callable[[__CallbackSelf, Sequence[float]], None]] = None,
-) -> mathutils.Vector: ...  # TODO: たしかVectorが返ったけど自信がない
+) -> Vector: ...  # TODO: たしかVectorが返ったけど自信がない
 def IntProperty(
     *,
     name: str = "",
@@ -126,7 +126,7 @@ def IntVectorProperty(
     update: Optional[Callable[[__CallbackSelf, Context], None]] = None,
     get: Optional[Callable[[__CallbackSelf], tuple[int, ...]]] = None,
     set: Optional[Callable[[__CallbackSelf, Sequence[int]], None]] = None,
-) -> mathutils.Vector: ...  # TODO: たしかVectorが返ったけど自信がない
+) -> Vector: ...  # TODO: たしかVectorが返ったけど自信がない
 def PointerProperty(
     *,
     type: __PointerPropertyTarget,

@@ -1,8 +1,8 @@
 from collections.abc import Iterator, Sequence
 from typing import Generic, Optional, TypeVar
 
-import mathutils
 from bpy.types import Mesh
+from mathutils import Vector
 
 __BMElemSeqElement = TypeVar("__BMElemSeqElement")
 
@@ -12,16 +12,16 @@ class BMElemSeq(Generic[__BMElemSeqElement]):
     def __iter__(self) -> Iterator[__BMElemSeqElement]: ...
 
 class BMLoopUV:
-    uv: mathutils.Vector
+    uv: Vector
 
 class BMVert:
     index: int
-    co: mathutils.Vector
+    co: Vector
 
     def __getitem__(
         self,
         value: BMLoopUV,
-    ) -> mathutils.Vector: ...  # ドキュメントには存在しない
+    ) -> Vector: ...  # ドキュメントには存在しない
 
 class BMLayerCollection:
     def __getitem__(self, key: str) -> BMLoopUV: ...  # ドキュメントに記載はない?

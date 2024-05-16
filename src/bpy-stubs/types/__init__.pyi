@@ -10,8 +10,6 @@ from collections.abc import (
 )
 from typing import Callable, Generic, Optional, TypeVar, Union, overload
 
-import mathutils
-
 # pyright: reportMissingImports=false, reportUnknownVariableType=false
 from io_scene_vrm.editor.extension import (
     VrmAddonArmatureExtensionPropertyGroup,
@@ -20,6 +18,7 @@ from io_scene_vrm.editor.extension import (
     VrmAddonObjectExtensionPropertyGroup,
     VrmAddonSceneExtensionPropertyGroup,
 )
+from mathutils import Euler, Matrix, Quaternion, Vector
 
 class bpy_struct:
     id_data: Optional[ID]
@@ -161,7 +160,7 @@ class Gizmo(bpy_struct):
     alpha_highlight: float
     color: tuple[float, float, float]
     color_highlight: tuple[float, float, float]
-    matrix_basis: mathutils.Matrix  # TODO: 型はMatrix?
+    matrix_basis: Matrix  # TODO: 型はMatrix?
     scale_basis: float
 
     def target_set_prop(
@@ -290,28 +289,28 @@ class Bone(bpy_struct, __CustomProperty):
     tail_radius: float
 
     @property
-    def head(self) -> mathutils.Vector: ...  # TODO: 型が正しいか?
+    def head(self) -> Vector: ...  # TODO: 型が正しいか?
     @head.setter
     def head(self, value: Sequence[float]) -> None: ...  # TODO: 型が正しいか?
     @property
-    def tail(self) -> mathutils.Vector: ...  # TODO: 型が正しいか?
+    def tail(self) -> Vector: ...  # TODO: 型が正しいか?
     @tail.setter
     def tail(self, value: Sequence[float]) -> None: ...  # TODO: 型が正しいか?
 
-    head_local: mathutils.Vector  # TODO: 型が正しいか?
+    head_local: Vector  # TODO: 型が正しいか?
     head_radius: float
 
     # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
-    tail_local: mathutils.Vector
+    tail_local: Vector
 
     # ドキュメントには二次元のfloat配列と書いてあるが、実際にはMatrix
-    matrix_local: mathutils.Matrix
+    matrix_local: Matrix
 
     @property
     def length(self) -> float: ...
     @property
     def children(self) -> bpy_prop_collection[Bone]: ...
-    def translate(self, vec: mathutils.Vector) -> None: ...
+    def translate(self, vec: Vector) -> None: ...
     @property
     def vrm_addon_extension(self) -> VrmAddonBoneExtensionPropertyGroup: ...
     def convert_local_to_pose(
@@ -321,24 +320,20 @@ class Bone(bpy_struct, __CustomProperty):
         parent_matrix: Iterable[Iterable[float]] = ...,
         parent_matrix_local: Iterable[Iterable[float]] = ...,
         invert: bool = False,
-    ) -> mathutils.Matrix: ...
+    ) -> Matrix: ...
 
 class EditBone(bpy_struct):
     name: str
     @property
     def head(
         self,
-    ) -> (
-        mathutils.Vector
-    ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
+    ) -> Vector: ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
     @head.setter
     def head(self, value: Iterable[float]) -> None: ...
     @property
     def tail(
         self,
-    ) -> (
-        mathutils.Vector
-    ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
+    ) -> Vector: ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
     @tail.setter
     def tail(self, value: Iterable[float]) -> None: ...
 
@@ -350,13 +345,13 @@ class EditBone(bpy_struct):
     head_radius: float
     tail_radius: float
     envelope_distance: float
-    matrix: mathutils.Matrix
+    matrix: Matrix
 
     @property
     def children(self) -> Sequence[EditBone]: ...
     def transform(
         self,
-        matrix: mathutils.Matrix,
+        matrix: Matrix,
         *,
         scale: bool = True,
         roll: bool = True,
@@ -380,23 +375,21 @@ class PoseBone(bpy_struct, __CustomProperty):
     @property
     def head(
         self,
-    ) -> (
-        mathutils.Vector
-    ): ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
+    ) -> Vector: ...  # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
     rotation_mode: str
-    rotation_quaternion: mathutils.Quaternion
+    rotation_quaternion: Quaternion
     @property
     def bone(self) -> Bone: ...
-    matrix: mathutils.Matrix  # これもドキュメントと異なりMatrix
-    matrix_basis: mathutils.Matrix  # これもドキュメントと異なりMatrix
+    matrix: Matrix  # これもドキュメントと異なりMatrix
+    matrix_basis: Matrix  # これもドキュメントと異なりMatrix
     @property
     def children(self) -> Sequence[PoseBone]: ...
     @property
-    def location(self) -> mathutils.Vector: ...  # TODO: 本当にVectorなのか確認
+    def location(self) -> Vector: ...  # TODO: 本当にVectorなのか確認
     @location.setter
     def location(self, value: Iterable[float]) -> None: ...
     @property
-    def scale(self) -> mathutils.Vector: ...  # TODO: 本当にVectorなのか確認
+    def scale(self) -> Vector: ...  # TODO: 本当にVectorなのか確認
     @scale.setter
     def scale(self, value: Iterable[float]) -> None: ...
 
@@ -541,7 +534,7 @@ class Addon(bpy_struct):
 class Addons(bpy_prop_collection[Addon]): ...
 
 class MeshUVLoop(bpy_struct):
-    uv: mathutils.Vector  # TODO: 正しい方を調べる
+    uv: Vector  # TODO: 正しい方を調べる
 
 class MeshUVLoopLayer(bpy_struct):
     name: str
@@ -562,9 +555,9 @@ class MeshLoopTriangle(bpy_struct):
     loops: tuple[int, int, int]  # TODO: 正しい型を調べる
 
 class MeshLoop(bpy_struct):
-    tangent: mathutils.Vector  # TODO: 正しい型を調べる
+    tangent: Vector  # TODO: 正しい型を調べる
     vertex_index: int
-    normal: mathutils.Vector
+    normal: Vector
 
 class MeshLoops(bpy_prop_collection[MeshLoop]): ...
 class MeshLoopTriangles(bpy_prop_collection[MeshLoopTriangle]): ...
@@ -576,7 +569,7 @@ class VertexGroupElement(bpy_struct):
 
 class MeshVertex(bpy_struct):
     co: tuple[float, float, float]  # Vectorかも?
-    normal: mathutils.Vector  # TODO: 正しい型を調べる
+    normal: Vector  # TODO: 正しい型を調べる
     @property
     def groups(self) -> bpy_prop_collection[VertexGroupElement]: ...
     @property
@@ -641,7 +634,7 @@ class Mesh(ID):
     def calc_tangents(self, uvmap: str = "") -> None: ...
     def calc_loop_triangles(self) -> None: ...
     def copy(self) -> Mesh: ...  # ID.copy()
-    def transform(self, matrix: mathutils.Matrix, shape_keys: bool = False) -> None: ...
+    def transform(self, matrix: Matrix, shape_keys: bool = False) -> None: ...
     def calc_normals_split(self) -> None: ...
     def update(
         self,
@@ -993,11 +986,11 @@ class ShaderNodeTexMagic(ShaderNode):
 
 class TexMapping(bpy_struct):
     @property
-    def translation(self) -> mathutils.Vector: ...
+    def translation(self) -> Vector: ...
     @translation.setter
     def translation(self, value: Iterable[float]) -> None: ...
     @property
-    def scale(self) -> mathutils.Vector: ...
+    def scale(self) -> Vector: ...
     @scale.setter
     def scale(self, value: Iterable[float]) -> None: ...
 
@@ -1250,20 +1243,20 @@ class Object(ID):
     show_in_front: bool
 
     rotation_mode: str
-    rotation_quaternion: mathutils.Quaternion  # TODO: 型あってる?
-    rotation_euler: mathutils.Euler
+    rotation_quaternion: Quaternion  # TODO: 型あってる?
+    rotation_euler: Euler
 
     @property
     def bound_box(self) -> bpy_prop_array[bpy_prop_array[float]]: ...
 
     # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
-    matrix_basis: mathutils.Matrix
+    matrix_basis: Matrix
     # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
-    matrix_world: mathutils.Matrix
+    matrix_world: Matrix
     # ドキュメントには4x4の2次元配列って書いてあるけど実際にはMatrix
-    matrix_local: mathutils.Matrix
+    matrix_local: Matrix
     # ドキュメントには3要素のfloat配列って書いてあるけど実際にはVector
-    scale: mathutils.Vector
+    scale: Vector
 
     @property
     def vertex_groups(self) -> VertexGroups: ...
@@ -1272,7 +1265,7 @@ class Object(ID):
         self,
     ) -> (
         # ドキュメントには3要素のfloat配列と書いてあるが、実際にはVector
-        mathutils.Vector
+        Vector
     ): ...
     @location.setter
     def location(self, value: Iterable[float]) -> None: ...
@@ -1400,32 +1393,32 @@ class NodeTreeInterfaceSocketVector(NodeTreeInterfaceSocket):
     min_value: float
 
 class NodeTreeInterfaceSocketVectorAcceleration(NodeTreeInterfaceSocket):
-    default_value: mathutils.Vector
+    default_value: Vector
     max_value: float
     min_value: float
 
 class NodeTreeInterfaceSocketVectorDirection(NodeTreeInterfaceSocket):
-    default_value: mathutils.Vector
+    default_value: Vector
     max_value: float
     min_value: float
 
 class NodeTreeInterfaceSocketVectorEuler(NodeTreeInterfaceSocket):
-    default_value: mathutils.Euler
+    default_value: Euler
     max_value: float
     min_value: float
 
 class NodeTreeInterfaceSocketVectorTranslation(NodeTreeInterfaceSocket):
-    default_value: mathutils.Vector
+    default_value: Vector
     max_value: float
     min_value: float
 
 class NodeTreeInterfaceSocketVectorVelocity(NodeTreeInterfaceSocket):
-    default_value: mathutils.Vector
+    default_value: Vector
     max_value: float
     min_value: float
 
 class NodeTreeInterfaceSocketVectorXYZ(NodeTreeInterfaceSocket):
-    default_value: mathutils.Vector
+    default_value: Vector
     max_value: float
     min_value: float
 
@@ -1550,7 +1543,7 @@ class ColorManagedViewSettings(bpy_struct):
     view_transform: str
 
 class View3DCursor(bpy_struct):
-    matrix: mathutils.Matrix
+    matrix: Matrix
 
 class RenderSettings(bpy_struct):
     fps: int
@@ -1634,11 +1627,11 @@ class Region(bpy_struct):
 
 class RegionView3D(bpy_struct):
     # ドキュメントには二次元配列と書いてあるので要確認
-    perspective_matrix: mathutils.Matrix
+    perspective_matrix: Matrix
     # ドキュメントには二次元配列と書いてあるので要確認
-    view_matrix: mathutils.Matrix
+    view_matrix: Matrix
     # ドキュメントには二次元配列と書いてあるので要確認
-    window_matrix: mathutils.Matrix
+    window_matrix: Matrix
 
 class Context(bpy_struct):
     def evaluated_depsgraph_get(self) -> Depsgraph: ...
@@ -1779,10 +1772,10 @@ class BlendDataActions(bpy_prop_collection[Action]):
 class BlendDataScenes(bpy_prop_collection[Scene]): ...
 
 class MetaElement(bpy_struct):
-    co: mathutils.Vector
+    co: Vector
     hide: bool
     radius: float
-    rotation: mathutils.Quaternion
+    rotation: Quaternion
 
 class MetaBallElements(bpy_prop_collection[MetaElement]):
     def new(self, type: str = "BALL") -> MetaElement: ...
