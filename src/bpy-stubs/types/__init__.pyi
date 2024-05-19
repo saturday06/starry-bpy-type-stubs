@@ -196,7 +196,12 @@ class Event(bpy_struct):
     def mouse_y(self) -> int: ...
 
 class ImageUser(bpy_struct): ...
-class PackedFile(bpy_struct): ...
+
+class PackedFile(bpy_struct):
+    @property
+    def data(self) -> bytes: ...  # ドキュメントにはstrと書いてあるが、実際にはbytes
+    @property
+    def size(self) -> int: ...
 
 class Image(ID):
     colorspace_settings: ColorManagedInputColorspaceSettings
