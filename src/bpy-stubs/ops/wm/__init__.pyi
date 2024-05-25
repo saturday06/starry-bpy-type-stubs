@@ -12,6 +12,7 @@ def save_as_mainfile(
 ) -> set[str]: ...
 def quit_blender(
     execution_context: str = "EXEC_DEFAULT",
+    /,
 ) -> None: ...
 def open_mainfile(
     execution_context: str = "EXEC_DEFAULT",
@@ -98,7 +99,10 @@ def vrm_export_confirmation(
     *,
     armature_object_name: str,
 ) -> set[str]: ...
-def vrm_export_armature_selection(execution_context: str) -> set[str]: ...
+def vrm_export_armature_selection(
+    execution_context: str,
+    /,
+) -> set[str]: ...
 def vrm_license_warning(
     execution_context: str = "EXEC_DEFAULT",
     /,
@@ -116,6 +120,7 @@ def vrm_license_warning(
 ) -> set[str]: ...
 def vrm_gltf2_addon_disabled_warning(
     execution_context: str = "EXEC_DEFAULT",
+    /,
 ) -> set[str]: ...
 def vrma_import_prerequisite(
     execution_context: str = "EXEC_DEFAULT",

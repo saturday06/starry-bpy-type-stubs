@@ -20,6 +20,7 @@ def select_all(
 ) -> set[str]: ...
 def shade_smooth(
     execution_context: str = "EXEC_DEFAULT",
+    /,
 ) -> set[str]: ...
 def modifier_add(
     execution_context: str = "EXEC_DEFAULT",
