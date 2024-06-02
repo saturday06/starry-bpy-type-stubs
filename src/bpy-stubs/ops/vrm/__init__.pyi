@@ -103,15 +103,3 @@ def update_vrm1_expression_ui_list_elements(
     execution_context: str = "EXEC_DEFAULT",
     /,
 ) -> set[str]: ...
-def initialize_vrm0_bone_transform(
-    execution_context: str = "EXEC_DEFAULT",
-    /,
-    *,
-    armature_name: str,
-) -> set[str]: ...
-def initialize_vrm1_bone_transform(
-    execution_context: str = "EXEC_DEFAULT",
-    /,
-    *,
-    armature_name: str,
-) -> set[str]: ...
