@@ -691,11 +691,14 @@ class Text(ID):
     def write(self, text: str) -> None: ...
 
 class NodeSocketInterface(bpy_struct):
-    description: str
-    name: str
     bl_socket_idname: str
+    description: str
+    hide_value: bool
     @property
     def identifier(self) -> str: ...
+    @property
+    def is_output(self) -> bool: ...
+    name: str
 
     # bpy.app.version >= (3, 0, 0)
     attribute_domain: str
