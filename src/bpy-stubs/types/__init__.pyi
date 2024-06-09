@@ -1482,6 +1482,24 @@ class NodeTreeInterfaceSocketVectorXYZ(NodeTreeInterfaceSocket):
     max_value: float
     min_value: float
 
+class NodeTreeInterfaceSocketInt(NodeTreeInterfaceSocket):
+    default_value: int
+    max_value: int
+    min_value: int
+    subtype: str
+
+class NodeTreeInterfaceSocketIntFactor(NodeTreeInterfaceSocket):
+    default_value: int
+    max_value: int
+    min_value: int
+    subtype: str
+
+class NodeTreeInterfaceSocketIntPercentage(NodeTreeInterfaceSocket):
+    default_value: int
+    max_value: int
+    min_value: int
+    subtype: str
+
 class NodeTreeInterfacePanel(NodeTreeInterfaceItem): ...
 
 class NodeTreeInterface(bpy_struct):
