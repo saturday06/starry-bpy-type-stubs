@@ -23,8 +23,16 @@ class BMVert:
         value: BMLoopUV,
     ) -> Vector: ...  # ドキュメントには存在しない
 
+class BMLayerItem:
+    def copy_from(self, other: BMLayerItem) -> None: ...
+    @property
+    def name(self) -> str: ...
+
 class BMLayerCollection:
     def __getitem__(self, key: str) -> BMLoopUV: ...  # ドキュメントに記載はない?
+    def keys(self) -> Iterator[str]: ...
+    def values(self) -> Iterator[BMLayerItem]: ...
+    def items(self) -> Iterator[tuple[str, BMLayerItem]]: ...
 
 class BMLayerAccessLoop:
     uv: BMLayerCollection
