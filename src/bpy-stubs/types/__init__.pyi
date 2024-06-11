@@ -21,6 +21,7 @@ from io_scene_vrm.editor.extension import (
 from mathutils import Euler, Matrix, Quaternion, Vector
 
 class bpy_struct:
+    def as_pointer(self) -> int: ...
     id_data: Optional[ID]
     def path_from_id(self, property: str = "") -> str: ...
     def keyframe_insert(
