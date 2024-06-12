@@ -20,8 +20,8 @@ debug_value: bool
 debug_wm: bool
 tempdir: str
 use_event_simulate: bool
-build_platform: str
-build_type: str
+build_platform: bytes
+build_type: bytes
 version_cycle: str
 version: tuple[int, int, int]
 binary_path: str
