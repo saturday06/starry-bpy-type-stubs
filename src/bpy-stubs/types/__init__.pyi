@@ -15,6 +15,7 @@ from io_scene_vrm.editor.extension import (
     VrmAddonArmatureExtensionPropertyGroup,
     VrmAddonBoneExtensionPropertyGroup,
     VrmAddonMaterialExtensionPropertyGroup,
+    VrmAddonNodeTreeExtensionPropertyGroup,
     VrmAddonObjectExtensionPropertyGroup,
     VrmAddonSceneExtensionPropertyGroup,
 )
@@ -1532,6 +1533,8 @@ class NodeTree(ID):
     def nodes(self) -> Nodes: ...
     @property
     def type(self) -> str: ...
+    @property
+    def vrm_addon_extension(self) -> VrmAddonNodeTreeExtensionPropertyGroup: ...
 
     # bpy.app.version < (4, 0)
     @property
