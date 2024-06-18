@@ -10,15 +10,6 @@ from collections.abc import (
 )
 from typing import Callable, Generic, Optional, TypeVar, Union, overload
 
-# pyright: reportMissingImports=false, reportUnknownVariableType=false
-from io_scene_vrm.editor.extension import (
-    VrmAddonArmatureExtensionPropertyGroup,
-    VrmAddonBoneExtensionPropertyGroup,
-    VrmAddonMaterialExtensionPropertyGroup,
-    VrmAddonNodeTreeExtensionPropertyGroup,
-    VrmAddonObjectExtensionPropertyGroup,
-    VrmAddonSceneExtensionPropertyGroup,
-)
 from mathutils import Euler, Matrix, Quaternion, Vector
 
 class bpy_struct:
@@ -318,8 +309,6 @@ class Bone(bpy_struct, __CustomProperty):
     @property
     def children(self) -> bpy_prop_collection[Bone]: ...
     def translate(self, vec: Vector) -> None: ...
-    @property
-    def vrm_addon_extension(self) -> VrmAddonBoneExtensionPropertyGroup: ...
     def convert_local_to_pose(
         self,
         matrix: Iterable[Iterable[float]],
@@ -681,8 +670,6 @@ class Armature(ID):
     def bones(self) -> ArmatureBones: ...
     @property
     def edit_bones(self) -> ArmatureEditBones: ...
-    @property
-    def vrm_addon_extension(self) -> VrmAddonArmatureExtensionPropertyGroup: ...
 
 class TextLine(bpy_struct):
     body: str
@@ -1344,8 +1331,6 @@ class Object(ID):
     def modifiers(self) -> ObjectModifiers: ...
     @property
     def animation_data(self) -> Optional[AnimData]: ...  # TODO: 本当にOptionalか確認
-    @property
-    def vrm_addon_extension(self) -> VrmAddonObjectExtensionPropertyGroup: ...
     def shape_key_add(self, name: str = "Key", from_mix: bool = True) -> ShapeKey: ...
     def select_get(self, view_layer: Optional[ViewLayer] = None) -> bool: ...
     def hide_get(self, view_layer: Optional[ViewLayer] = None) -> bool: ...
@@ -1533,8 +1518,6 @@ class NodeTree(ID):
     def nodes(self) -> Nodes: ...
     @property
     def type(self) -> str: ...
-    @property
-    def vrm_addon_extension(self) -> VrmAddonNodeTreeExtensionPropertyGroup: ...
 
     # bpy.app.version < (4, 0)
     @property
@@ -1561,9 +1544,6 @@ class Material(ID):
     alpha_method: str
     diffuse_color: bpy_prop_array[float]
     roughness: float
-
-    @property
-    def vrm_addon_extension(self) -> VrmAddonMaterialExtensionPropertyGroup: ...
 
 class IDMaterials(bpy_prop_collection[Optional[Material]]):
     def append(self, value: Material) -> None: ...  # TODO: ドキュメントには存在しない
@@ -1651,8 +1631,6 @@ class Scene(ID):
     def cursor(self) -> View3DCursor: ...
     @property
     def render(self) -> RenderSettings: ...
-    @property
-    def vrm_addon_extension(self) -> VrmAddonSceneExtensionPropertyGroup: ...
 
 class AreaSpaces(bpy_prop_collection[Space]): ...
 
